@@ -56,12 +56,12 @@ export default function Home() {
         ))}
       </div>
 
-      <h2 className="section-title">Bald im Lernbereich</h2>
-      <a className="card learn-teaser" href="#/lernen">
+      <h2 className="section-title">Lernen</h2>
+      <a className="card learn-teaser" href="#/lektionen">
         <GraduationCap size={32} />
         <div>
-          <h3>Lektionen</h3>
-          <p className="muted">Sieh dir an, was als Nächstes kommt.</p>
+          <h3>Neu im Schach? Starte mit den Lektionen</h3>
+          <p className="muted">20 Lektionen zum Mitmachen – von den Figuren bis zum Mattsetzen.</p>
         </div>
       </a>
     </div>

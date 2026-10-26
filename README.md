@@ -29,9 +29,10 @@ src/
   engine/stockfish.js         Verbindung zur Stockfish-Engine
   components/                 Bausteine: Brett, Seitenleiste, Zugliste, Avatar
   analysis/                   Partie-Analyse: Zugbewertung und Ablauf
+  lessons/                    Lektionsinhalte und Aufgabentypen
   openings/                   Eröffnungstrainer, Lexikon und Eröffnungsdatenbank
   puzzles/                    Puzzle-Wertung, Auswahl und deutsche Themennamen
-  pages/                      Seiten: Start, Spielen, Freies Brett, Puzzles, Analyse, Eröffnungen, Lernen, Einstellungen
+  pages/                      Seiten: Start, Spielen, Freies Brett, Lektionen, Puzzles, Analyse, Eröffnungen, Lernen, Einstellungen
 public/puzzles/puzzles.json   Puzzle-Daten (Auswahl aus der Lichess-Datenbank)
 public/openings/openings.json Eröffnungsnamen (Lichess chess-openings)
 scripts/copy-stockfish.js     kopiert die Engine nach public/stockfish/
@@ -59,9 +60,10 @@ offen bleiben, wenn die Seite veröffentlicht wird.
       Genauigkeit, Bewertungsbalken und -diagramm
 - [x] Eröffnungen: Trainer mit 12 Eröffnungen (Lernen + Üben), Lexikon mit 3.865 Varianten,
       Eröffnungsname beim Spielen, Buchzüge in der Analyse
+- [x] Lektionen: 20 interaktive Lektionen in 6 Kapiteln (Sterne sammeln, Aufgaben,
+      Endspiele gegen Stockfish)
 - [x] Puzzles: ca. 6.000 Aufgaben, eigene Wertung, Serie, Hinweise, Themen-Filter
 - [x] Einstellungen: Brettfarben (auch eigene), Koordinaten, Animationen, Notation
 - [ ] Auswahl bei der Bauernumwandlung (aktuell immer Dame)
-- [ ] Lektionen
 - [ ] Fortschritt speichern / Benutzerkonten
 - [ ] Online stellen (Vercel/Netlify)

@@ -10,38 +10,32 @@ import {
   Swords,
 } from 'lucide-react';
 
+// hideOnMobile: auf dem Handy ist unten nur Platz für wenige Einträge
 const MAIN_ITEMS = [
   { route: '', label: 'Start', icon: House },
   { route: 'spielen', label: 'Spielen', icon: Swords },
-  { route: 'freies-brett', label: 'Freies Brett', icon: Grid3x3 },
+  { route: 'freies-brett', label: 'Freies Brett', icon: Grid3x3, hideOnMobile: true },
 ];
 
 const LEARN_ITEMS = [
-  { route: 'lernen', label: 'Übersicht', icon: GraduationCap, hideOnMobile: true },
+  { route: 'lernen', label: 'Übersicht', mobileLabel: 'Lernen', icon: GraduationCap },
+  { route: 'lektionen', label: 'Lektionen', icon: BookOpen, hideOnMobile: true },
   { route: 'puzzles', label: 'Puzzles', icon: Puzzle },
-  { label: 'Lektionen', icon: BookOpen, soon: true },
-  { route: 'eroeffnungen', label: 'Eröffnungen', icon: Library },
-  { route: 'analyse', label: 'Analyse', icon: ChartLine },
+  { route: 'eroeffnungen', label: 'Eröffnungen', icon: Library, hideOnMobile: true },
+  { route: 'analyse', label: 'Analyse', icon: ChartLine, hideOnMobile: true },
 ];
 
 function NavItem({ item, current }) {
   const Icon = item.icon;
-  if (item.soon) {
-    return (
-      <span className="nav-item disabled" title="Bald verfügbar">
-        <Icon size={20} />
-        <span className="nav-label">{item.label}</span>
-        <span className="badge">bald</span>
-      </span>
-    );
-  }
+  const classes = ['nav-item'];
+  if (current === item.route) classes.push('active');
+  if (item.hideOnMobile) classes.push('hide-mobile');
+  if (item.mobileLabel) classes.push('has-mobile-label');
   return (
-    <a
-      href={`#/${item.route}`}
-      className={`nav-item ${current === item.route ? 'active' : ''} ${item.hideOnMobile ? 'hide-mobile' : ''}`}
-    >
+    <a href={`#/${item.route}`} className={classes.join(' ')}>
       <Icon size={20} />
       <span className="nav-label">{item.label}</span>
+      {item.mobileLabel && <span className="nav-label-mobile">{item.mobileLabel}</span>}
     </a>
   );
 }

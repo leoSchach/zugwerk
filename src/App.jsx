@@ -7,6 +7,7 @@ import Learn from './pages/Learn.jsx';
 import Puzzles from './pages/Puzzles.jsx';
 import Analysis from './pages/Analysis.jsx';
 import Openings from './pages/Openings.jsx';
+import Lessons from './pages/Lessons.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 
 const PAGES = {
@@ -17,6 +18,7 @@ const PAGES = {
   puzzles: Puzzles,
   analyse: Analysis,
   eroeffnungen: Openings,
+  lektionen: Lessons,
   einstellungen: SettingsPage,
 };
 
