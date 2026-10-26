@@ -6,6 +6,7 @@ import FreeBoard from './pages/FreeBoard.jsx';
 import Learn from './pages/Learn.jsx';
 import Puzzles from './pages/Puzzles.jsx';
 import Analysis from './pages/Analysis.jsx';
+import Openings from './pages/Openings.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 
 const PAGES = {
@@ -15,6 +16,7 @@ const PAGES = {
   lernen: Learn,
   puzzles: Puzzles,
   analyse: Analysis,
+  eroeffnungen: Openings,
   einstellungen: SettingsPage,
 };
 

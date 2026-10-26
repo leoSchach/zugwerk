@@ -7,12 +7,6 @@ const AREAS = [
     text: 'Schritt für Schritt: von den Grundregeln über Gabel und Fesselung bis zum Endspiel.',
     color: '#4fc3f7',
   },
-  {
-    icon: Library,
-    title: 'Eröffnungen',
-    text: 'Lerne die wichtigsten Eröffnungen und übe sie wie mit Karteikarten.',
-    color: '#ffb74d',
-  },
 ];
 
 export default function Learn() {
@@ -30,6 +24,13 @@ export default function Learn() {
           </span>
           <h3>Puzzles</h3>
           <p className="muted">Fast 6.000 Taktikaufgaben aus der Lichess-Datenbank, passend zu deiner Wertung.</p>
+        </a>
+        <a className="card feature-card link" href="#/eroeffnungen">
+          <span className="feature-icon" style={{ background: '#ffb74d' }}>
+            <Library size={24} />
+          </span>
+          <h3>Eröffnungen</h3>
+          <p className="muted">12 Eröffnungen mit Erklärungen lernen und üben, dazu ein Lexikon mit über 3.800 Varianten.</p>
         </a>
         <a className="card feature-card link" href="#/analyse">
           <span className="feature-icon" style={{ background: '#ba68c8' }}>

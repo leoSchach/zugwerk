@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowUpDown,
+  BookOpen,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -192,7 +193,8 @@ function Review({ game, result, onNew }) {
 
   const position = positions[ply];
   const move = ply > 0 ? moves[ply - 1] : null;
-  const showBest = move && move.bestUci && !['best', 'brilliant', 'great', 'forced'].includes(move.cls);
+  const showBest =
+    move && move.bestUci && !['best', 'brilliant', 'great', 'forced', 'book'].includes(move.cls);
 
   const boardConfig = useMemo(() => {
     const shapes = [];
@@ -227,6 +229,11 @@ function Review({ game, result, onNew }) {
             {white} – {black}
             {game.headers.Result && game.headers.Result !== '*' && ` · ${game.headers.Result}`}
           </p>
+          {result.opening && (
+            <p className="opening-name">
+              <BookOpen size={16} /> {result.opening.eco} · {result.opening.name}
+            </p>
+          )}
         </div>
         <button className="btn" onClick={onNew}>
           <Plus size={18} /> Neue Analyse

@@ -20,7 +20,7 @@ const LEARN_ITEMS = [
   { route: 'lernen', label: 'Übersicht', icon: GraduationCap, hideOnMobile: true },
   { route: 'puzzles', label: 'Puzzles', icon: Puzzle },
   { label: 'Lektionen', icon: BookOpen, soon: true },
-  { label: 'Eröffnungen', icon: Library, soon: true },
+  { route: 'eroeffnungen', label: 'Eröffnungen', icon: Library },
   { route: 'analyse', label: 'Analyse', icon: ChartLine },
 ];
 

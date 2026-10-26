@@ -8,6 +8,7 @@ export const CLASSES = {
   best: { name: 'Bester Zug', symbol: '★', color: '#81b64c', text: 'ist der beste Zug' },
   excellent: { name: 'Exzellent', symbol: '✓', color: '#96bc4b', text: 'ist exzellent' },
   good: { name: 'Gut', symbol: '✓', color: '#8fa877', text: 'ist gut' },
+  book: { name: 'Buchzug', symbol: '📖', color: '#a88865', text: 'ist ein bekannter Eröffnungszug' },
   forced: { name: 'Erzwungen', symbol: '→', color: '#97a4a6', text: 'war der einzige legale Zug' },
   inaccuracy: { name: 'Ungenauigkeit', symbol: '?!', color: '#f0c03c', text: 'ist eine Ungenauigkeit' },
   miss: { name: 'Verpasst', symbol: '✗', color: '#ee6b55', text: 'verpasst eine Chance' },

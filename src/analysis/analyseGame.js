@@ -1,6 +1,7 @@
 import { Chess } from 'chess.js';
 import { createEngine } from '../engine/stockfish.js';
 import { classifyMove, winPercent, CLASS_ORDER } from './classify.js';
+import { findOpening, loadBook, positionKey } from '../openings/book.js';
 
 // Die Partie, die analysiert werden soll, liegt im sessionStorage.
 // So können "Spielen" und "Freies Brett" eine Partie an die Analyse übergeben.
@@ -84,6 +85,7 @@ export function analyseGame(history, depth, onProgress) {
   let cancelled = false;
 
   async function run() {
+    const book = await loadBook().catch(() => null);
     const fens = [history[0].before, ...history.map((m) => m.after)];
     const positions = [];
 
@@ -96,8 +98,11 @@ export function analyseGame(history, depth, onProgress) {
     }
     engine.terminate();
 
+    // Buchzüge: solange jede Stellung in der Eröffnungsdatenbank steht
+    let inBook = Boolean(book);
     const moves = history.map((move, i) => {
       const before = positions[i].lines;
+      inBook = inBook && book.byPosition.has(positionKey(move.after));
       const result = classifyMove({
         fenBefore: move.before,
         move,
@@ -114,10 +119,12 @@ export function analyseGame(history, depth, onProgress) {
         bestUci,
         bestSan: uciToSan(move.before, bestUci),
         ...result,
+        cls: inBook ? 'book' : result.cls,
       };
     });
 
-    return { positions, moves, summary: summarize(moves) };
+    const opening = findOpening(book, history);
+    return { positions, moves, summary: summarize(moves), opening };
   }
 
   return {

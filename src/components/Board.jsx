@@ -8,8 +8,10 @@ import { useSettings } from '../settings.jsx';
 // Das Schachbrett. Wir benutzen "chessground", das Brett von Lichess.
 // `config` wird bei jeder Änderung an chessground weitergegeben,
 // `onMove(from, to)` wird aufgerufen, wenn der Spieler einen Zug macht.
-export default function Board({ config, onMove }) {
+// `coordinates` überschreibt die Einstellung (z. B. für kleine Vorschau-Bretter).
+export default function Board({ config, onMove, coordinates }) {
   const { settings } = useSettings();
+  const showCoordinates = coordinates ?? settings.coordinates;
   const elementRef = useRef(null);
   const apiRef = useRef(null);
   const onMoveRef = useRef(onMove);
@@ -28,7 +30,7 @@ export default function Board({ config, onMove }) {
   // deshalb wird das Brett neu aufgebaut, wenn sich die Einstellung ändert.
   useEffect(() => {
     apiRef.current = Chessground(elementRef.current, {
-      coordinates: settings.coordinates,
+      coordinates: showCoordinates,
       premovable: { enabled: false },
       movable: {
         free: false,
@@ -37,7 +39,7 @@ export default function Board({ config, onMove }) {
     });
     apiRef.current.set(configRef.current);
     return () => apiRef.current.destroy();
-  }, [settings.coordinates]);
+  }, [showCoordinates]);
 
   useEffect(() => {
     apiRef.current?.set(configRef.current);

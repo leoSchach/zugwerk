@@ -14,6 +14,7 @@ import Board from '../components/Board.jsx';
 import MoveList from '../components/MoveList.jsx';
 import { useChessGame } from '../hooks/useChessGame.js';
 import { openInAnalysis } from '../analysis/analyseGame.js';
+import { findOpening, useOpeningBook } from '../openings/book.js';
 import { colorName, gameOverText, legalDests } from '../chess-utils.js';
 
 // Ein Brett ohne Gegner: Du ziehst Weiß und Schwarz selbst.
@@ -36,6 +37,8 @@ export default function FreeBoard() {
     return () => window.removeEventListener('keydown', onKey);
   });
 
+  const book = useOpeningBook();
+  const opening = useMemo(() => findOpening(book, game.history({ verbose: true })), [book, fen]);
   const over = gameOverText(game);
 
   const boardConfig = useMemo(
@@ -113,6 +116,11 @@ export default function FreeBoard() {
             </p>
           )}
 
+          {opening && (
+            <p className="opening-name">
+              {opening.eco} · {opening.name}
+            </p>
+          )}
           <MoveList history={history} />
 
           <div className="panel-actions">

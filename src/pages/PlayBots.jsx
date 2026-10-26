@@ -6,6 +6,7 @@ import MoveList from '../components/MoveList.jsx';
 import { BOTS } from '../bots.js';
 import { createEngine } from '../engine/stockfish.js';
 import { openInAnalysis } from '../analysis/analyseGame.js';
+import { findOpening, useOpeningBook } from '../openings/book.js';
 import { useChessGame } from '../hooks/useChessGame.js';
 import { colorName, gameOverText, legalDests } from '../chess-utils.js';
 
@@ -141,6 +142,8 @@ function BotGame({ bot, playerColor, onRematch, onExit }) {
     return () => engine.terminate();
   }, [bot]);
 
+  const book = useOpeningBook();
+  const opening = useMemo(() => findOpening(book, game.history({ verbose: true })), [book, fen]);
   const result = resultFor(game, playerColor, resigned);
   const botTurn = !result && game.turn() !== playerColor[0];
 
@@ -218,6 +221,11 @@ function BotGame({ bot, playerColor, onRematch, onExit }) {
             </p>
           )}
 
+          {opening && (
+            <p className="opening-name">
+              {opening.eco} · {opening.name}
+            </p>
+          )}
           <MoveList history={history} />
 
           {result && history.length > 0 && (
