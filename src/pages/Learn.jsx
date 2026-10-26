@@ -2,12 +2,6 @@ import { BookOpen, ChartLine, Grid3x3, Library, Puzzle, Swords } from 'lucide-re
 
 const AREAS = [
   {
-    icon: Puzzle,
-    title: 'Puzzles',
-    text: 'Taktik trainieren mit über 4 Millionen Aufgaben aus der Lichess-Datenbank.',
-    color: '#81b64c',
-  },
-  {
     icon: BookOpen,
     title: 'Lektionen',
     text: 'Schritt für Schritt: von den Grundregeln über Gabel und Fesselung bis zum Endspiel.',
@@ -32,25 +26,17 @@ export default function Learn() {
     <div className="page">
       <header className="page-header">
         <h1>Lernen</h1>
-        <p>Alles, wofür man anderswo Premium braucht – hier kostenlos. Daran bauen wir gerade.</p>
+        <p>Alles, wofür man anderswo Premium braucht – hier kostenlos.</p>
       </header>
 
       <div className="card-grid">
-        {AREAS.map((area) => (
-          <div className="card feature-card soon" key={area.title}>
-            <span className="feature-icon" style={{ background: area.color }}>
-              <area.icon size={24} />
-            </span>
-            <h3>
-              {area.title} <span className="badge">bald</span>
-            </h3>
-            <p className="muted">{area.text}</p>
-          </div>
-        ))}
-      </div>
-
-      <h2 className="section-title">Schon jetzt verfügbar</h2>
-      <div className="card-grid">
+        <a className="card feature-card link" href="#/puzzles">
+          <span className="feature-icon" style={{ background: '#81b64c' }}>
+            <Puzzle size={24} />
+          </span>
+          <h3>Puzzles</h3>
+          <p className="muted">Fast 6.000 Taktikaufgaben aus der Lichess-Datenbank, passend zu deiner Wertung.</p>
+        </a>
         <a className="card feature-card link" href="#/spielen">
           <span className="feature-icon" style={{ background: '#e57373' }}>
             <Swords size={24} />
@@ -65,6 +51,21 @@ export default function Learn() {
           <h3>Freies Brett</h3>
           <p className="muted">Stellungen aufbauen und Züge ausprobieren.</p>
         </a>
+      </div>
+
+      <h2 className="section-title">Bald verfügbar</h2>
+      <div className="card-grid">
+        {AREAS.map((area) => (
+          <div className="card feature-card soon" key={area.title}>
+            <span className="feature-icon" style={{ background: area.color }}>
+              <area.icon size={24} />
+            </span>
+            <h3>
+              {area.title} <span className="badge">bald</span>
+            </h3>
+            <p className="muted">{area.text}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

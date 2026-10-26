@@ -618,6 +618,146 @@ h3 {
   color: var(--muted);
 }
 
+/* ============ Puzzles ============ */
+.puzzle-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--bg);
+  border-left: 4px solid var(--border);
+}
+
+.puzzle-status strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+}
+
+.puzzle-status span {
+  color: var(--muted);
+}
+
+.puzzle-solved {
+  border-left-color: var(--accent);
+  background: rgba(129, 182, 76, 0.12);
+}
+
+.puzzle-solved strong {
+  color: #b5dc8b;
+}
+
+.puzzle-failed {
+  border-left-color: var(--danger);
+  background: rgba(217, 83, 79, 0.12);
+}
+
+.puzzle-failed strong {
+  color: #f2b8b5;
+}
+
+.puzzle-hint {
+  border-left-color: #e6b440;
+  background: rgba(230, 180, 64, 0.12);
+}
+
+.puzzle-hint strong {
+  color: #f0d08a;
+}
+
+.puzzle-info p {
+  margin: 0 0 10px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 6px;
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.stat-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.recent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.recent-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.recent-dot.solved {
+  background: var(--accent);
+}
+
+.recent-dot.hint {
+  background: #e6b440;
+}
+
+.recent-dot.failed {
+  background: var(--danger);
+}
+
+.theme-select .label {
+  display: block;
+  margin-top: 0;
+}
+
+.theme-select select {
+  width: 100%;
+  cursor: pointer;
+}
+
+.external {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.external:hover {
+  color: var(--text);
+}
+
 /* ============ Bot-Auswahl ============ */
 .select-layout {
   display: grid;
@@ -1035,7 +1175,8 @@ h3 {
   .logo,
   .play-button,
   .nav-heading,
-  .nav-item.disabled {
+  .nav-item.disabled,
+  .nav-item.hide-mobile {
     display: none;
   }
 

@@ -4,6 +4,7 @@ import Home from './pages/Home.jsx';
 import PlayBots from './pages/PlayBots.jsx';
 import FreeBoard from './pages/FreeBoard.jsx';
 import Learn from './pages/Learn.jsx';
+import Puzzles from './pages/Puzzles.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 
 const PAGES = {
@@ -11,6 +12,7 @@ const PAGES = {
   spielen: PlayBots,
   'freies-brett': FreeBoard,
   lernen: Learn,
+  puzzles: Puzzles,
   einstellungen: SettingsPage,
 };
 

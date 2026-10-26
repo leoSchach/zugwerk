@@ -17,8 +17,8 @@ const MAIN_ITEMS = [
 ];
 
 const LEARN_ITEMS = [
-  { route: 'lernen', label: 'Übersicht', icon: GraduationCap },
-  { label: 'Puzzles', icon: Puzzle, soon: true },
+  { route: 'lernen', label: 'Übersicht', icon: GraduationCap, hideOnMobile: true },
+  { route: 'puzzles', label: 'Puzzles', icon: Puzzle },
   { label: 'Lektionen', icon: BookOpen, soon: true },
   { label: 'Eröffnungen', icon: Library, soon: true },
   { label: 'Analyse', icon: ChartLine, soon: true },
@@ -36,7 +36,10 @@ function NavItem({ item, current }) {
     );
   }
   return (
-    <a href={`#/${item.route}`} className={`nav-item ${current === item.route ? 'active' : ''}`}>
+    <a
+      href={`#/${item.route}`}
+      className={`nav-item ${current === item.route ? 'active' : ''} ${item.hideOnMobile ? 'hide-mobile' : ''}`}
+    >
       <Icon size={20} />
       <span className="nav-label">{item.label}</span>
     </a>

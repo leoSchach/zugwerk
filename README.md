@@ -28,14 +28,18 @@ src/
   hooks/useChessGame.js       gemeinsame Spiellogik (ziehen, zurück, vor, FEN laden)
   engine/stockfish.js         Verbindung zur Stockfish-Engine
   components/                 Bausteine: Brett, Seitenleiste, Zugliste, Avatar
-  pages/                      Seiten: Start, Spielen, Freies Brett, Lernen, Einstellungen
+  puzzles/                    Puzzle-Wertung, Auswahl und deutsche Themennamen
+  pages/                      Seiten: Start, Spielen, Freies Brett, Puzzles, Lernen, Einstellungen
+public/puzzles/puzzles.json   Puzzle-Daten (Auswahl aus der Lichess-Datenbank)
 scripts/copy-stockfish.js     kopiert die Engine nach public/stockfish/
+scripts/build-puzzles.js      erzeugt puzzles.json neu (Anleitung oben in der Datei)
 ```
 
 ## Verwendete Bibliotheken
 
 - [chess.js](https://github.com/jhlywa/chess.js): Schachregeln, legale Züge, Matt/Patt
 - [chessground](https://github.com/lichess-org/chessground): das Brett von Lichess (GPL-3.0)
+- [Lichess-Puzzle-Datenbank](https://database.lichess.org/#puzzles): Puzzles (CC0, frei nutzbar)
 - [stockfish.js](https://github.com/nmrugg/stockfish.js): Stockfish 19 als WebAssembly (GPL-3.0)
 
 Weil chessground und Stockfish unter der GPL stehen, muss der Quellcode von Zugwerk ebenfalls
@@ -46,10 +50,10 @@ offen bleiben, wenn die Seite veröffentlicht wird.
 - [x] Gegen Bots spielen (8 Bots von ca. 250 bis 3000 Elo)
 - [x] Freies Brett (beide Seiten ziehen, vor/zurück, FEN laden)
 - [x] Seitenleiste, Startseite, Lernbereich-Übersicht
+- [x] Puzzles: ca. 6.000 Aufgaben, eigene Wertung, Serie, Hinweise, Themen-Filter
 - [x] Einstellungen: Brettfarben (auch eigene), Koordinaten, Animationen, Notation
 - [ ] Auswahl bei der Bauernumwandlung (aktuell immer Dame)
 - [ ] Partieanalyse mit Bewertungsbalken
-- [ ] Taktik-Puzzles (Lichess-Puzzle-Datenbank)
 - [ ] Eröffnungstrainer
 - [ ] Lektionen
 - [ ] Fortschritt speichern / Benutzerkonten

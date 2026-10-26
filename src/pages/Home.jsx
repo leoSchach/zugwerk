@@ -1,4 +1,4 @@
-import { Grid3x3, GraduationCap, Swords } from 'lucide-react';
+import { Grid3x3, GraduationCap, Puzzle, Swords } from 'lucide-react';
 import Board from '../components/Board.jsx';
 import Avatar from '../components/Avatar.jsx';
 import { BOTS } from '../bots.js';
@@ -23,12 +23,15 @@ export default function Home() {
             <span className="accent">Kostenlos.</span>
           </h1>
           <p className="hero-sub">
-            Spiele gegen Bots in jeder Stärke, probiere Züge auf dem freien Brett aus und werde
+            Spiele gegen Bots in jeder Stärke, löse Puzzles, probiere Züge auf dem freien Brett aus und werde
             Schritt für Schritt besser – ohne Abo.
           </p>
           <div className="hero-buttons">
             <a className="btn btn-primary btn-large" href="#/spielen">
               <Swords size={20} /> Gegen Bot spielen
+            </a>
+            <a className="btn btn-large" href="#/puzzles">
+              <Puzzle size={20} /> Puzzles lösen
             </a>
             <a className="btn btn-large" href="#/freies-brett">
               <Grid3x3 size={20} /> Freies Brett
@@ -57,7 +60,7 @@ export default function Home() {
       <a className="card learn-teaser" href="#/lernen">
         <GraduationCap size={32} />
         <div>
-          <h3>Puzzles, Lektionen, Eröffnungen und Analyse</h3>
+          <h3>Lektionen, Eröffnungen und Analyse</h3>
           <p className="muted">Sieh dir an, was als Nächstes kommt.</p>
         </div>
       </a>
