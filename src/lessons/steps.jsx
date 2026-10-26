@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Chess } from 'chess.js';
 import { Lightbulb, RotateCcw } from 'lucide-react';
 import Board from '../components/Board.jsx';
+import { needsPromotion, usePromotion } from '../components/Promotion.jsx';
 import { useChessGame } from '../hooks/useChessGame.js';
 import { colorName, legalDests } from '../chess-utils.js';
 import { createEngine } from '../engine/stockfish.js';
@@ -121,6 +122,7 @@ export function MoveStep({ step, onDone, footer }) {
   const [hint, setHint] = useState(false);
   const timers = useRef([]);
   const playerColor = colorName(step.fen.split(' ')[1]);
+  const promotion = usePromotion(playerColor);
 
   function later(fn, ms) {
     timers.current.push(setTimeout(fn, ms));
@@ -138,9 +140,10 @@ export function MoveStep({ step, onDone, footer }) {
     };
   }, [step]);
 
-  function handleMove(from, to) {
+  async function handleMove(from, to) {
     const options = [].concat(step.solution[ply]);
-    const played = move({ from, to, promotion: 'q' });
+    const piece = needsPromotion(game, from, to) ? await promotion.ask(to, playerColor) : undefined;
+    const played = move({ from, to, promotion: piece });
     if (!played) return;
 
     const correct = options.includes(played.san) || (step.mate && game.isCheckmate());
@@ -197,7 +200,7 @@ export function MoveStep({ step, onDone, footer }) {
   );
 
   return (
-    <StepLayout board={<Board config={config} onMove={handleMove} />} footer={footer}>
+    <StepLayout board={<Board config={config} onMove={handleMove} overlay={promotion.dialog} />} footer={footer}>
       <p className="lesson-text">{step.text}</p>
       <Feedback kind={feedback?.kind}>{feedback?.text}</Feedback>
       {phase !== 'done' && (
@@ -219,6 +222,7 @@ export function PlayStep({ step, onDone, footer }) {
   const engineRef = useRef(null);
   const runRef = useRef(0); // erkennt Antworten aus einem abgebrochenen Versuch
   const playerColor = colorName(step.fen.split(' ')[1]);
+  const promotion = usePromotion(playerColor);
 
   useEffect(() => {
     const engine = createEngine();
@@ -255,8 +259,9 @@ export function PlayStep({ step, onDone, footer }) {
     }
   }
 
-  function handleMove(from, to) {
-    const played = move({ from, to, promotion: 'q' });
+  async function handleMove(from, to) {
+    const piece = needsPromotion(game, from, to) ? await promotion.ask(to, playerColor) : undefined;
+    const played = move({ from, to, promotion: piece });
     if (!played) return;
     setMoves((m) => m + 1);
     const result = checkEnd(played);
@@ -289,7 +294,7 @@ export function PlayStep({ step, onDone, footer }) {
   );
 
   return (
-    <StepLayout board={<Board config={config} onMove={handleMove} />} footer={footer}>
+    <StepLayout board={<Board config={config} onMove={handleMove} overlay={promotion.dialog} />} footer={footer}>
       <p className="lesson-text">{step.text}</p>
       <p className="muted small">Deine Züge: {moves}</p>
       {phase === 'won' && (

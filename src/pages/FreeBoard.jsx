@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Board from '../components/Board.jsx';
 import MoveList from '../components/MoveList.jsx';
+import { needsPromotion, usePromotion } from '../components/Promotion.jsx';
 import { useChessGame } from '../hooks/useChessGame.js';
 import { openInAnalysis } from '../analysis/analyseGame.js';
 import { findOpening, useOpeningBook } from '../openings/book.js';
@@ -25,6 +26,7 @@ export default function FreeBoard() {
   const [fenInput, setFenInput] = useState('');
   const [fenError, setFenError] = useState(false);
   const [copied, setCopied] = useState(false);
+  const promotion = usePromotion(orientation);
 
   // Pfeiltasten zum Vor- und Zurückspringen
   useEffect(() => {
@@ -53,8 +55,10 @@ export default function FreeBoard() {
     [fen, orientation, over],
   );
 
-  function handleMove(from, to) {
-    move({ from, to, promotion: 'q' });
+  async function handleMove(from, to) {
+    const color = colorName(game.turn());
+    const piece = needsPromotion(game, from, to) ? await promotion.ask(to, color) : undefined;
+    move({ from, to, promotion: piece });
   }
 
   function loadFen(e) {
@@ -81,7 +85,7 @@ export default function FreeBoard() {
 
       <div className="game-layout">
         <div className="board-column">
-          <Board config={boardConfig} onMove={handleMove} />
+          <Board config={boardConfig} onMove={handleMove} overlay={promotion.dialog} />
           <div className="board-controls">
             <button className="icon-btn" onClick={undoAll} disabled={!canUndo} title="Zum Anfang">
               <ChevronsLeft />

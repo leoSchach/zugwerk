@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChartLine, Flag, RotateCcw, Shuffle, Undo2, Users } from 'lucide-react';
 import Board from '../components/Board.jsx';
 import Avatar from '../components/Avatar.jsx';
+import { needsPromotion, usePromotion } from '../components/Promotion.jsx';
 import MoveList from '../components/MoveList.jsx';
 import { BOTS } from '../bots.js';
 import { createEngine } from '../engine/stockfish.js';
@@ -133,6 +134,7 @@ function BotGame({ bot, playerColor, onRematch, onExit }) {
   const [thinking, setThinking] = useState(false);
   const [resigned, setResigned] = useState(false);
   const engineRef = useRef(null);
+  const promotion = usePromotion(playerColor);
 
   useEffect(() => {
     const engine = createEngine();
@@ -164,9 +166,9 @@ function BotGame({ bot, playerColor, onRematch, onExit }) {
     };
   }, [fen, botTurn]);
 
-  function handlePlayerMove(from, to) {
-    // Bauernumwandlung: vorerst immer zur Dame
-    move({ from, to, promotion: 'q' });
+  async function handlePlayerMove(from, to) {
+    const piece = needsPromotion(game, from, to) ? await promotion.ask(to, playerColor) : undefined;
+    move({ from, to, promotion: piece });
   }
 
   function takeBack() {
@@ -202,7 +204,7 @@ function BotGame({ bot, playerColor, onRematch, onExit }) {
             <span className="player-elo">({bot.elo})</span>
             {thinking && <span className="thinking-dots" aria-label="denkt nach" />}
           </div>
-          <Board config={boardConfig} onMove={handlePlayerMove} />
+          <Board config={boardConfig} onMove={handlePlayerMove} overlay={promotion.dialog} />
           <div className="player-bar">
             <Avatar piece={playerColor === 'white' ? '♙' : '♟'} color="#5c5a57" size={36} />
             <span className="player-name">Du</span>

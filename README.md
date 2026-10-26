@@ -64,6 +64,6 @@ offen bleiben, wenn die Seite veröffentlicht wird.
       Endspiele gegen Stockfish)
 - [x] Puzzles: ca. 6.000 Aufgaben, eigene Wertung, Serie, Hinweise, Themen-Filter
 - [x] Einstellungen: Brettfarben (auch eigene), Koordinaten, Animationen, Notation
-- [ ] Auswahl bei der Bauernumwandlung (aktuell immer Dame)
+- [x] Auswahl bei der Bauernumwandlung (Dame, Springer, Turm, Läufer)
 - [ ] Fortschritt speichern / Benutzerkonten
 - [ ] Online stellen (Vercel/Netlify)

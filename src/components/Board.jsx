@@ -9,7 +9,8 @@ import { useSettings } from '../settings.jsx';
 // `config` wird bei jeder Änderung an chessground weitergegeben,
 // `onMove(from, to)` wird aufgerufen, wenn der Spieler einen Zug macht.
 // `coordinates` überschreibt die Einstellung (z. B. für kleine Vorschau-Bretter).
-export default function Board({ config, onMove, coordinates }) {
+// `overlay` wird über dem Brett angezeigt (z. B. die Auswahl bei der Bauernumwandlung).
+export default function Board({ config, onMove, coordinates, overlay }) {
   const { settings } = useSettings();
   const showCoordinates = coordinates ?? settings.coordinates;
   const elementRef = useRef(null);
@@ -45,5 +46,10 @@ export default function Board({ config, onMove, coordinates }) {
     apiRef.current?.set(configRef.current);
   }, [config, settings.animation, settings.showDests]);
 
-  return <div ref={elementRef} className="board" />;
+  return (
+    <div className="board-wrap">
+      <div ref={elementRef} className="board" />
+      {overlay}
+    </div>
+  );
 }
