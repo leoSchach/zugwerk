@@ -6,12 +6,14 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  ChartLine,
   Copy,
   Plus,
 } from 'lucide-react';
 import Board from '../components/Board.jsx';
 import MoveList from '../components/MoveList.jsx';
 import { useChessGame } from '../hooks/useChessGame.js';
+import { openInAnalysis } from '../analysis/analyseGame.js';
 import { colorName, gameOverText, legalDests } from '../chess-utils.js';
 
 // Ein Brett ohne Gegner: Du ziehst Weiß und Schwarz selbst.
@@ -116,6 +118,9 @@ export default function FreeBoard() {
           <div className="panel-actions">
             <button className="btn" onClick={reset}>
               <Plus size={18} /> Neue Stellung
+            </button>
+            <button className="btn" onClick={() => openInAnalysis(game)} disabled={!canUndo}>
+              <ChartLine size={18} /> Analysieren
             </button>
           </div>
 

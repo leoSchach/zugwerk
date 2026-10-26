@@ -13,12 +13,6 @@ const AREAS = [
     text: 'Lerne die wichtigsten Eröffnungen und übe sie wie mit Karteikarten.',
     color: '#ffb74d',
   },
-  {
-    icon: ChartLine,
-    title: 'Analyse',
-    text: 'Lass deine Partien von Stockfish prüfen: Fehler, Patzer und beste Züge.',
-    color: '#ba68c8',
-  },
 ];
 
 export default function Learn() {
@@ -36,6 +30,13 @@ export default function Learn() {
           </span>
           <h3>Puzzles</h3>
           <p className="muted">Fast 6.000 Taktikaufgaben aus der Lichess-Datenbank, passend zu deiner Wertung.</p>
+        </a>
+        <a className="card feature-card link" href="#/analyse">
+          <span className="feature-icon" style={{ background: '#ba68c8' }}>
+            <ChartLine size={24} />
+          </span>
+          <h3>Analyse</h3>
+          <p className="muted">Stockfish bewertet jeden Zug: von brillant über verpasst bis Patzer.</p>
         </a>
         <a className="card feature-card link" href="#/spielen">
           <span className="feature-icon" style={{ background: '#e57373' }}>

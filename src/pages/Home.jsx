@@ -60,7 +60,7 @@ export default function Home() {
       <a className="card learn-teaser" href="#/lernen">
         <GraduationCap size={32} />
         <div>
-          <h3>Lektionen, Eröffnungen und Analyse</h3>
+          <h3>Lektionen und Eröffnungen</h3>
           <p className="muted">Sieh dir an, was als Nächstes kommt.</p>
         </div>
       </a>

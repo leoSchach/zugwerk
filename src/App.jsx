@@ -5,6 +5,7 @@ import PlayBots from './pages/PlayBots.jsx';
 import FreeBoard from './pages/FreeBoard.jsx';
 import Learn from './pages/Learn.jsx';
 import Puzzles from './pages/Puzzles.jsx';
+import Analysis from './pages/Analysis.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 
 const PAGES = {
@@ -13,6 +14,7 @@ const PAGES = {
   'freies-brett': FreeBoard,
   lernen: Learn,
   puzzles: Puzzles,
+  analyse: Analysis,
   einstellungen: SettingsPage,
 };
 

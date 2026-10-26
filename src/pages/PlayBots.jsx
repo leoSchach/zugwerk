@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Flag, RotateCcw, Shuffle, Undo2, Users } from 'lucide-react';
+import { ChartLine, Flag, RotateCcw, Shuffle, Undo2, Users } from 'lucide-react';
 import Board from '../components/Board.jsx';
 import Avatar from '../components/Avatar.jsx';
 import MoveList from '../components/MoveList.jsx';
 import { BOTS } from '../bots.js';
 import { createEngine } from '../engine/stockfish.js';
+import { openInAnalysis } from '../analysis/analyseGame.js';
 import { useChessGame } from '../hooks/useChessGame.js';
 import { colorName, gameOverText, legalDests } from '../chess-utils.js';
 
@@ -218,6 +219,21 @@ function BotGame({ bot, playerColor, onRematch, onExit }) {
           )}
 
           <MoveList history={history} />
+
+          {result && history.length > 0 && (
+            <button
+              className="btn btn-analyse"
+              onClick={() =>
+                openInAnalysis(
+                  game,
+                  playerColor === 'white' ? 'Du' : bot.name,
+                  playerColor === 'white' ? bot.name : 'Du',
+                )
+              }
+            >
+              <ChartLine size={18} /> Partie analysieren
+            </button>
+          )}
 
           <div className="panel-actions">
             {result ? (

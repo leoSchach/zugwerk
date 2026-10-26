@@ -21,7 +21,7 @@ const LEARN_ITEMS = [
   { route: 'puzzles', label: 'Puzzles', icon: Puzzle },
   { label: 'Lektionen', icon: BookOpen, soon: true },
   { label: 'Eröffnungen', icon: Library, soon: true },
-  { label: 'Analyse', icon: ChartLine, soon: true },
+  { route: 'analyse', label: 'Analyse', icon: ChartLine },
 ];
 
 function NavItem({ item, current }) {
