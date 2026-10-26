@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# wird bei "npm install" automatisch erzeugt
+public/stockfish/

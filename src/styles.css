@@ -1,0 +1,111 @@
+:root {
+  --bg: #262421;
+  --panel: #312e2b;
+  --text: #e8e6e3;
+  --muted: #a7a39e;
+  --accent: #81b64c;
+  --accent-dark: #5d8a32;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.tagline {
+  margin: 4px 0 20px;
+  color: var(--muted);
+}
+
+main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* Brettgröße: passt sich dem Bildschirm an */
+.board {
+  width: min(92vw, 560px);
+  height: min(92vw, 560px);
+}
+
+.panel {
+  flex: 1;
+  min-width: 260px;
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.status {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 0;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+button {
+  padding: 10px 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: var(--accent);
+  border: none;
+  border-bottom: 3px solid var(--accent-dark);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.skill {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+h2 {
+  font-size: 1rem;
+  color: var(--muted);
+  margin: 20px 0 8px;
+}
+
+.moves {
+  margin: 0;
+  padding-left: 2.2em;
+  max-height: 260px;
+  overflow-y: auto;
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+.moves li span {
+  display: inline-block;
+  width: 5em;
+}
