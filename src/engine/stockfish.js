@@ -44,14 +44,20 @@ export function createEngine() {
       worker.postMessage(`setoption name Skill Level value ${level}`);
     },
 
-    // Liefert den besten Zug im UCI-Format, z. B. "e2e4" oder "e7e8q"
-    bestMove(fen, movetimeMs) {
+    newGame() {
+      stop();
+      worker.postMessage('ucinewgame');
+    },
+
+    // Liefert den besten Zug im UCI-Format, z. B. "e2e4" oder "e7e8q".
+    // `limit` begrenzt die Suche, z. B. "depth 3" oder "movetime 500".
+    bestMove(fen, limit) {
       stop();
       return new Promise((resolve) => {
         resolveBest = resolve;
         pending++;
         worker.postMessage(`position fen ${fen}`);
-        worker.postMessage(`go movetime ${movetimeMs}`);
+        worker.postMessage(`go ${limit}`);
       });
     },
 

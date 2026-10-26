@@ -12,6 +12,7 @@
   "dependencies": {
     "chess.js": "^1.4.0",
     "chessground": "^9.2.1",
+    "lucide-react": "^1.61.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "stockfish": "19.0.1"

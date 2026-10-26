@@ -17,14 +17,19 @@ Weitere Befehle:
 ## Projektaufbau
 
 ```
-index.html                  Einstiegsseite
+index.html                    Einstiegsseite
 src/
-  main.jsx                  startet React
-  App.jsx                   Spiellogik: Züge, Computergegner, Steuerung
-  components/Board.jsx      das Schachbrett (chessground)
-  engine/stockfish.js       Verbindung zur Stockfish-Engine
-  styles.css                Aussehen
-scripts/copy-stockfish.js   kopiert die Engine nach public/stockfish/
+  main.jsx                    startet React
+  App.jsx                     Seitenleiste + welche Seite angezeigt wird (#/spielen usw.)
+  styles.css                  komplettes Design
+  settings.jsx                Einstellungen (Brettfarben usw.), im Browser gespeichert
+  bots.js                     alle Bots mit Name, Stärke und Sprüchen
+  chess-utils.js              Hilfsfunktionen (legale Züge, deutsche Notation, Spielende)
+  hooks/useChessGame.js       gemeinsame Spiellogik (ziehen, zurück, vor, FEN laden)
+  engine/stockfish.js         Verbindung zur Stockfish-Engine
+  components/                 Bausteine: Brett, Seitenleiste, Zugliste, Avatar
+  pages/                      Seiten: Start, Spielen, Freies Brett, Lernen, Einstellungen
+scripts/copy-stockfish.js     kopiert die Engine nach public/stockfish/
 ```
 
 ## Verwendete Bibliotheken
@@ -38,7 +43,10 @@ offen bleiben, wenn die Seite veröffentlicht wird.
 
 ## Roadmap
 
-- [x] Gegen den Computer spielen (Stärke einstellbar)
+- [x] Gegen Bots spielen (8 Bots von ca. 250 bis 3000 Elo)
+- [x] Freies Brett (beide Seiten ziehen, vor/zurück, FEN laden)
+- [x] Seitenleiste, Startseite, Lernbereich-Übersicht
+- [x] Einstellungen: Brettfarben (auch eigene), Koordinaten, Animationen, Notation
 - [ ] Auswahl bei der Bauernumwandlung (aktuell immer Dame)
 - [ ] Partieanalyse mit Bewertungsbalken
 - [ ] Taktik-Puzzles (Lichess-Puzzle-Datenbank)
