@@ -1831,6 +1831,210 @@ h3 {
   font-size: 1.8rem;
 }
 
+/* ============ Gegen Freunde ============ */
+.friends-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  transition: background 0.15s;
+}
+
+.friends-banner:hover {
+  background: var(--card-hover);
+}
+
+.friends-banner > span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.friends-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 420px) 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.create-game {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.create-game .label:first-of-type {
+  margin-top: 0;
+}
+
+.create-game .btn-large {
+  margin-top: 20px;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 6px;
+}
+
+.time-option {
+  padding: 10px 6px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.time-option:hover {
+  background: var(--card-hover);
+}
+
+.time-option.active {
+  border-color: var(--accent);
+}
+
+.game-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.game-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--bg);
+  transition: background 0.15s;
+}
+
+.game-row:hover {
+  background: var(--card-hover);
+}
+
+.game-row.my-turn {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.game-row-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.game-row-status {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.game-row.my-turn .game-row-status {
+  color: #b5dc8b;
+}
+
+.friend-message {
+  margin: 24px auto;
+  text-align: center;
+  align-items: center;
+}
+
+.friend-message .fen-row {
+  width: 100%;
+}
+
+.friend-message .input-actions {
+  justify-content: center;
+}
+
+.waiting-dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.waiting-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: waiting 1.2s infinite ease-in-out;
+}
+
+.waiting-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.waiting-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes waiting {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.online-avatar {
+  background: #5c5a57;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.clock {
+  margin-left: auto;
+  min-width: 92px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--muted);
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock.running {
+  background: #ece9e4;
+  color: #262421;
+}
+
+.clock.running.low {
+  background: var(--danger);
+  color: white;
+}
+
+.draw-offer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(240, 192, 60, 0.12);
+}
+
+.draw-offer > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
 /* ============ Bot-Auswahl ============ */
 .select-layout {
   display: grid;
@@ -2184,7 +2388,8 @@ h3 {
 @media (max-width: 1100px) {
   .select-layout,
   .settings-layout,
-  .lexicon {
+  .lexicon,
+  .friends-layout {
     grid-template-columns: 1fr;
   }
 

@@ -9,6 +9,7 @@ import {
   Puzzle,
   Settings,
   Swords,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 
@@ -16,6 +17,7 @@ import { useAuth } from '../auth.jsx';
 const MAIN_ITEMS = [
   { route: '', label: 'Start', icon: House },
   { route: 'spielen', label: 'Spielen', icon: Swords },
+  { route: 'freunde', label: 'Gegen Freunde', icon: Users, hideOnMobile: true },
   { route: 'freies-brett', label: 'Freies Brett', icon: Grid3x3, hideOnMobile: true },
 ];
 

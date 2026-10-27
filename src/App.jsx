@@ -9,6 +9,8 @@ import Analysis from './pages/Analysis.jsx';
 import Openings from './pages/Openings.jsx';
 import Lessons from './pages/Lessons.jsx';
 import Account from './pages/Account.jsx';
+import Friends from './pages/Friends.jsx';
+import FriendGame from './pages/FriendGame.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 
 const PAGES = {
@@ -21,10 +23,13 @@ const PAGES = {
   eroeffnungen: Openings,
   lektionen: Lessons,
   konto: Account,
+  freunde: Friends,
+  partie: FriendGame,
   einstellungen: SettingsPage,
 };
 
 // Die aktuelle Seite steht in der Adresse hinter dem #, z. B. "#/spielen"
+// oder mit Zusatz wie "#/partie/<id>"
 function currentRoute() {
   return window.location.hash.replace(/^#\/?/, '');
 }
@@ -41,13 +46,16 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  const Page = PAGES[route] ?? Home;
+  const [base, param] = route.split('/');
+  const Page = PAGES[base] ?? Home;
+  // Partien gehören in der Seitenleiste zu "Gegen Freunde"
+  const current = base === 'partie' ? 'freunde' : PAGES[base] ? base : '';
 
   return (
     <div className="layout">
-      <Sidebar current={PAGES[route] ? route : ''} />
+      <Sidebar current={current} />
       <main className="content">
-        <Page />
+        <Page key={route} param={param} />
       </main>
     </div>
   );

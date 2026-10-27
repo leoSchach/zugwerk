@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChartLine, Flag, RotateCcw, Shuffle, Undo2, Users } from 'lucide-react';
+import { ChartLine, ChevronRight, Flag, RotateCcw, Shuffle, Undo2, Users } from 'lucide-react';
 import Board from '../components/Board.jsx';
 import Avatar from '../components/Avatar.jsx';
 import { needsPromotion, usePromotion } from '../components/Promotion.jsx';
@@ -48,6 +48,15 @@ export default function PlayBots() {
         <h1>Gegen Bots spielen</h1>
         <p>Wähle einen Gegner, der zu deiner Spielstärke passt.</p>
       </header>
+
+      <a className="card friends-banner" href="#/freunde">
+        <Users size={22} />
+        <span>
+          <strong>Lieber gegen echte Menschen?</strong>
+          <span className="muted small">Erstelle eine Partie und schick deinem Freund den Link.</span>
+        </span>
+        <ChevronRight size={20} />
+      </a>
 
       <div className="select-layout">
         <div className="bot-grid">

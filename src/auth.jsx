@@ -24,6 +24,29 @@ function translate(error) {
 // Nach dem Klick auf einen Link aus einer E-Mail landet man auf der Startseite (ohne #)
 const redirectUrl = () => window.location.origin + window.location.pathname;
 
+// Seite, zu der man nach dem Anmelden zurückkehren soll (z. B. eine Einladung zu einer Partie).
+// Im localStorage, weil der Bestätigungslink aus der E-Mail oft in einem neuen Tab aufgeht.
+const RETURN_KEY = 'zugwerk-zurueck';
+
+export function rememberReturn(hash) {
+  try {
+    localStorage.setItem(RETURN_KEY, hash);
+  } catch {
+    // egal
+  }
+}
+
+function returnAfterLogin() {
+  try {
+    const hash = localStorage.getItem(RETURN_KEY);
+    if (!hash) return;
+    localStorage.removeItem(RETURN_KEY);
+    window.location.hash = hash;
+  } catch {
+    // egal
+  }
+}
+
 // Sicherung: höchstens einmal pro Sitzung neu laden, damit nie eine Endlosschleife entsteht
 const RELOAD_FLAG = 'zugwerk-sync-reload';
 
@@ -65,6 +88,7 @@ export function AuthProvider({ children }) {
   // danach jede Änderung (kurz verzögert) in die Cloud hochladen.
   useEffect(() => {
     if (!userId) return;
+    returnAfterLogin();
     let cancelled = false;
     let timer = null;
 
