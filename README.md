@@ -9,6 +9,17 @@ npm install     # einmalig: lädt alle Pakete und kopiert Stockfish nach public/
 npm run dev     # startet die Seite auf http://localhost:5173
 ```
 
+### Benutzerkonten (optional)
+
+Ohne Zugangsdaten läuft die Seite komplett, speichert den Fortschritt aber nur im Browser.
+Für Konten mit Cloud-Speicherung:
+
+1. Projekt bei [Supabase](https://supabase.com) anlegen und `supabase/schema.sql` im SQL Editor ausführen,
+   danach: `grant select, insert, update on public.progress to authenticated;`
+2. `.env.example` nach `.env.local` kopieren und Project URL + anon/publishable Key eintragen
+3. In Supabase unter Authentication → URL Configuration die Site URL setzen
+   (lokal `http://localhost:5173`, online die echte Adresse)
+
 Weitere Befehle:
 
 - `npm run build`: baut die fertige Seite in den Ordner `dist/`
@@ -22,7 +33,9 @@ src/
   main.jsx                    startet React
   App.jsx                     Seitenleiste + welche Seite angezeigt wird (#/spielen usw.)
   styles.css                  komplettes Design
-  settings.jsx                Einstellungen (Brettfarben usw.), im Browser gespeichert
+  settings.jsx                Einstellungen (Brettfarben usw.)
+  storage.js                  Speichern im Browser + Abgleich mit dem Konto
+  auth.jsx, supabase.js       Benutzerkonten (Anmeldung über Supabase)
   bots.js                     alle Bots mit Name, Stärke und Sprüchen
   chess-utils.js              Hilfsfunktionen (legale Züge, deutsche Notation, Spielende)
   hooks/useChessGame.js       gemeinsame Spiellogik (ziehen, zurück, vor, FEN laden)
@@ -65,5 +78,5 @@ offen bleiben, wenn die Seite veröffentlicht wird.
 - [x] Puzzles: ca. 6.000 Aufgaben, eigene Wertung, Serie, Hinweise, Themen-Filter
 - [x] Einstellungen: Brettfarben (auch eigene), Koordinaten, Animationen, Notation
 - [x] Auswahl bei der Bauernumwandlung (Dame, Springer, Turm, Läufer)
-- [ ] Fortschritt speichern / Benutzerkonten
+- [x] Benutzerkonten (Supabase, E-Mail + Passwort) mit Cloud-Speicherung des Fortschritts
 - [ ] Online stellen (Vercel/Netlify)

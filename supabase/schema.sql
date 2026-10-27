@@ -7,6 +7,9 @@ create table if not exists public.progress (
   updated_at timestamptz not null default now()
 );
 
+-- Angemeldete Nutzer dürfen die Tabelle benutzen (neue Projekte vergeben das nicht automatisch)
+grant select, insert, update on public.progress to authenticated;
+
 -- Row Level Security: Jeder darf nur seinen eigenen Fortschritt sehen und ändern
 alter table public.progress enable row level security;
 
