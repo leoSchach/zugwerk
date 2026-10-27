@@ -10,7 +10,18 @@ import GameReview from '../components/GameReview.jsx';
 import GameOverOverlay from '../components/GameOverOverlay.jsx';
 import ResultBanner from '../components/ResultBanner.jsx';
 import { findOpening, useOpeningBook } from '../openings/book.js';
-import { REASONS, actions, formatClock, gameLink, remainingMs, timeLabel, useOnlineGame } from '../online/games.js';
+import {
+  MODES,
+  REASONS,
+  actions,
+  fetchRatings,
+  formatClock,
+  gameLink,
+  ratingDelta,
+  remainingMs,
+  timeLabel,
+  useOnlineGame,
+} from '../online/games.js';
 
 // Ergebnis eines Zugs, falls er die Partie beendet
 function endOf(chess) {
@@ -106,7 +117,7 @@ function Waiting({ game }) {
     return (
       <Message
         title={`${creatorName} fordert dich heraus!`}
-        text={`Bedenkzeit: ${timeLabel(game)} · Du spielst ${youPlay}.`}
+        text={`${timeLabel(game)}${game.rated ? ' · gewertet' : ''} · Du spielst ${youPlay}.`}
       >
         {error && <p className="error-text">{error}</p>}
         <button className="btn btn-primary btn-large" onClick={join} disabled={busy}>
@@ -123,7 +134,8 @@ function Waiting({ game }) {
         <p className="muted">
           Schick ihm diesen Link. Sobald er ihn öffnet und annimmt, geht die Partie los.
           <br />
-          Bedenkzeit: {timeLabel(game)} · Du spielst {game.white_id ? 'Weiß' : 'Schwarz'}.
+          {timeLabel(game)}
+          {game.rated ? ' · gewertet' : ''} · Du spielst {game.white_id ? 'Weiß' : 'Schwarz'}.
         </p>
         <div className="fen-row">
           <code className="fen">{link}</code>
@@ -167,6 +179,17 @@ function LiveGame({ game, serverOffset }) {
   const [actionError, setActionError] = useState(null);
   const [now, setNow] = useState(() => Date.now() + serverOffset);
   const timeoutClaimed = useRef(false);
+  const [ratings, setRatings] = useState(null);
+  // Großes Ergebnisfenster nur, wenn die Partie gerade erst geendet hat – nicht beim späteren Ansehen
+  const [endedRecently] = useState(
+    () => game.status === 'active' || Date.now() + serverOffset - new Date(game.updated_at).getTime() < 120000,
+  );
+
+  // Aktuelle Wertungen beider Spieler (nach Spielende neu, dann stimmt auch die Änderung)
+  useEffect(() => {
+    if (!game.rated) return;
+    fetchRatings([game.white_id, game.black_id], game.mode).then(setRatings);
+  }, [game.rated, game.white_id, game.black_id, game.mode, game.status]);
 
   // Bestätigt der Server den Zug (oder ist die Partie weiter), ist der wartende Zug erledigt
   useEffect(() => {
@@ -253,6 +276,29 @@ function LiveGame({ game, serverOffset }) {
   );
 
   const names = { w: game.white_name ?? 'Weiß', b: game.black_name ?? 'Schwarz' };
+  const ids = { w: game.white_id, b: game.black_id };
+
+  // Wertung neben dem Namen: nach der Partie mit Änderung, sonst die aktuelle
+  function ratingInfo(color) {
+    if (!game.rated) return null;
+    const before = color === 'w' ? game.white_rating : game.black_rating;
+    const change = color === 'w' ? game.white_change : game.black_change;
+    if (before != null) return { rating: before + change, change };
+    const current = ratings?.[ids[color]];
+    return current ? { rating: current.rating } : null;
+  }
+
+  // Vorschau: so viele Punkte gibt es für Sieg, Remis und Niederlage
+  let stakes = null;
+  if (game.rated && active && me && ratings) {
+    const mine = ratings[ids[me]];
+    const theirs = ratings[ids[me === 'w' ? 'b' : 'w']];
+    if (mine && theirs) {
+      stakes = [1, 0.5, 0].map((score) => ratingDelta(mine, theirs, score));
+    }
+  }
+  const myRating = me ? ratingInfo(me) : null;
+  const modeName = game.mode ? MODES[game.mode].label : '';
   const top = orientation === 'white' ? 'b' : 'w';
   const bottom = top === 'w' ? 'b' : 'w';
   const opponentOffersDraw = active && me && game.draw_offer && game.draw_offer !== me;
@@ -287,20 +333,38 @@ function LiveGame({ game, serverOffset }) {
     <div className="page game-page">
       <div className="game-layout">
         <div className="board-column">
-          <PlayerBar name={names[top]} ms={clocks[top]} running={active && chess.turn() === top} />
+          <PlayerBar name={names[top]} rating={ratingInfo(top)} ms={clocks[top]} running={active && chess.turn() === top} />
           <Board
             config={boardConfig}
             onMove={handleMove}
             overlay={
               promotion.dialog ??
-              (result && (
-                <GameOverOverlay outcome={result.outcome} title={result.title} subtitle={result.subtitle}>
+              (result && endedRecently && (
+                <GameOverOverlay
+                  outcome={result.outcome}
+                  title={result.title}
+                  subtitle={result.subtitle}
+                  extra={
+                    myRating?.change != null && (
+                      <p className="overlay-rating">
+                        {modeName}-Wertung: <strong>{myRating.rating}</strong>{' '}
+                        <RatingChange change={myRating.change} />
+                      </p>
+                    )
+                  }
+                >
                   {rematchButton}
                 </GameOverOverlay>
               ))
             }
           />
-          <PlayerBar name={names[bottom]} ms={clocks[bottom]} running={active && chess.turn() === bottom} you={me === bottom} />
+          <PlayerBar
+            name={names[bottom]}
+            rating={ratingInfo(bottom)}
+            ms={clocks[bottom]}
+            running={active && chess.turn() === bottom}
+            you={me === bottom}
+          />
         </div>
 
         <aside className="card game-panel">
@@ -316,8 +380,16 @@ function LiveGame({ game, serverOffset }) {
 
           <p className="muted small">
             {timeLabel(game)}
+            {game.rated ? ' · gewertet' : ' · ungewertet'}
             {opening && ` · ${opening.eco} ${opening.name}`}
           </p>
+
+          {stakes && (
+            <p className="stakes">
+              Sieg <RatingChange change={stakes[0]} /> · Remis <RatingChange change={stakes[1]} /> · Niederlage{' '}
+              <RatingChange change={stakes[2]} />
+            </p>
+          )}
 
           {opponentOffersDraw && (
             <div className="draw-offer">
@@ -360,14 +432,34 @@ function LiveGame({ game, serverOffset }) {
   );
 }
 
-function PlayerBar({ name, ms, running, you }) {
+function RatingChange({ change }) {
+  return (
+    <span className={`rating-change ${change > 0 ? 'up' : change < 0 ? 'down' : ''}`}>
+      {change > 0 ? `+${change}` : change}
+    </span>
+  );
+}
+
+function PlayerBar({ name, rating, ms, running, you }) {
   return (
     <div className="player-bar">
       <span className="avatar online-avatar" style={{ width: 36, height: 36, fontSize: 16 }}>
         {name.slice(0, 1).toUpperCase()}
       </span>
       <span className="player-name">{name}</span>
-      {you && <span className="player-elo">(du)</span>}
+      {rating && (
+        <span className="player-elo">
+          ({rating.rating}
+          {rating.change != null && (
+            <>
+              {' '}
+              <RatingChange change={rating.change} />
+            </>
+          )}
+          )
+        </span>
+      )}
+      {you && <span className="player-elo">· du</span>}
       {ms !== null && (
         <span className={`clock ${running ? 'running' : ''} ${ms < 20000 ? 'low' : ''}`}>{formatClock(ms)}</span>
       )}

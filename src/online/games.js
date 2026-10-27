@@ -1,19 +1,75 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../supabase.js';
 
-// Bedenkzeiten zur Auswahl: [Minuten, Sekunden Zuschlag pro Zug]
+// Spielmodi nach Bedenkzeit – jede Kategorie hat eine eigene Elo-Wertung
+export const MODES = {
+  bullet: { label: 'Bullet', emoji: '⚡' },
+  blitz: { label: 'Blitz', emoji: '🔥' },
+  rapid: { label: 'Schnellschach', emoji: '⏱️' },
+  classical: { label: 'Klassisch', emoji: '⏳' },
+};
+
+export const START_RATING = 1200;
+
+// Bedenkzeiten zur Auswahl, nach Modus gruppiert: Grundzeit in Sekunden, Zuschlag pro Zug
 export const TIME_CONTROLS = [
-  { id: 'none', label: 'Ohne Uhr', initial: null, increment: 0 },
-  { id: '3+2', label: '3 + 2', initial: 180, increment: 2 },
-  { id: '5+0', label: '5 Min', initial: 300, increment: 0 },
-  { id: '10+0', label: '10 Min', initial: 600, increment: 0 },
-  { id: '15+10', label: '15 + 10', initial: 900, increment: 10 },
-];
+  { id: '1+0', initial: 60, increment: 0 },
+  { id: '1+1', initial: 60, increment: 1 },
+  { id: '2+1', initial: 120, increment: 1 },
+  { id: '3+0', initial: 180, increment: 0 },
+  { id: '3+2', initial: 180, increment: 2 },
+  { id: '5+0', initial: 300, increment: 0 },
+  { id: '5+3', initial: 300, increment: 3 },
+  { id: '10+0', initial: 600, increment: 0 },
+  { id: '10+5', initial: 600, increment: 5 },
+  { id: '15+10', initial: 900, increment: 10 },
+  { id: '30+0', initial: 1800, increment: 0 },
+  { id: '30+20', initial: 1800, increment: 20 },
+  { id: 'none', initial: null, increment: 0 },
+].map((tc) => ({ ...tc, mode: modeOf(tc.initial, tc.increment), label: tcLabel(tc.initial, tc.increment) }));
+
+// Gleiche Einteilung wie in der Datenbank (supabase/ratings.sql): Grundzeit + 40 × Zuschlag
+export function modeOf(initial, increment) {
+  if (!initial) return null;
+  const estimate = initial + 40 * increment;
+  if (estimate < 180) return 'bullet';
+  if (estimate < 480) return 'blitz';
+  if (estimate < 1500) return 'rapid';
+  return 'classical';
+}
+
+function tcLabel(initial, increment) {
+  if (!initial) return 'Ohne Uhr';
+  return `${initial / 60} | ${increment}`;
+}
 
 export function timeLabel(game) {
   if (!game.time_initial) return 'Ohne Uhr';
-  const minutes = game.time_initial / 60;
-  return game.time_increment ? `${minutes} + ${game.time_increment}` : `${minutes} Min`;
+  const mode = MODES[modeOf(game.time_initial, game.time_increment)];
+  return `${mode.emoji} ${mode.label} ${tcLabel(game.time_initial, game.time_increment)}`;
+}
+
+// Elo-Änderung für ein Ergebnis (1 = Sieg, 0.5 = Remis, 0 = Niederlage) – wie in der Datenbank
+export function ratingDelta(my, opponent, score) {
+  const k = my.games < 20 ? 40 : 20;
+  const expected = 1 / (1 + 10 ** ((opponent.rating - my.rating) / 400));
+  return Math.round(k * (score - expected));
+}
+
+// Wertungen von Spielern in einem Modus: { [userId]: { rating, games, ... } }
+export async function fetchRatings(userIds, mode) {
+  const ids = userIds.filter(Boolean);
+  const result = Object.fromEntries(ids.map((id) => [id, { rating: START_RATING, games: 0 }]));
+  if (!mode || ids.length === 0) return result;
+  const { data } = await supabase.from('ratings').select('*').eq('mode', mode).in('user_id', ids);
+  for (const row of data ?? []) result[row.user_id] = row;
+  return result;
+}
+
+// Alle Wertungen eines Spielers: { bullet: {...}, blitz: {...}, ... }
+export async function fetchMyRatings(userId) {
+  const { data } = await supabase.from('ratings').select('*').eq('user_id', userId);
+  return Object.fromEntries((data ?? []).map((row) => [row.mode, row]));
 }
 
 export const REASONS = {
@@ -31,11 +87,12 @@ export function gameLink(id) {
   return `${window.location.origin}${window.location.pathname}#/partie/${id}`;
 }
 
-// Neue Partie anlegen; Gibt die ID zurück
-export async function createGame({ userId, username, color, timeControl }) {
+// Neue Partie anlegen; gibt die ID zurück
+export async function createGame({ userId, username, color, timeControl, rated }) {
   const tc = TIME_CONTROLS.find((t) => t.id === timeControl) ?? TIME_CONTROLS[0];
   const ms = tc.initial ? tc.initial * 1000 : null;
   const row = {
+    rated: Boolean(rated && tc.initial),
     white_id: color === 'white' ? userId : null,
     black_id: color === 'black' ? userId : null,
     white_name: color === 'white' ? username : null,

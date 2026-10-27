@@ -2285,6 +2285,102 @@ h3 {
   }
 }
 
+/* ============ Modi & Wertungen ============ */
+.mode-group {
+  margin-top: 4px;
+}
+
+.mode-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mode-rating {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.8rem;
+  letter-spacing: 0;
+}
+
+.time-option.untimed {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.rated-toggle {
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.rated-toggle.disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.rating-change {
+  font-weight: 800;
+}
+
+.rating-change.up {
+  color: #8fd35a;
+}
+
+.rating-change.down {
+  color: #f08a85;
+}
+
+.game-row-status .rating-change {
+  margin-left: 6px;
+}
+
+.stakes {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 0.9rem;
+}
+
+.overlay-rating {
+  margin: 4px 0 0;
+}
+
+.overlay-rating strong {
+  color: var(--text);
+}
+
+.rating-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.rating-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: background 0.15s;
+}
+
+.rating-card:hover {
+  background: var(--card-hover);
+}
+
+.rating-mode {
+  font-weight: 700;
+}
+
+.rating-card .stat-value {
+  font-size: 2rem;
+}
+
+.setup-card .time-grid {
+  width: 100%;
+}
+
 /* ============ Bot-Auswahl ============ */
 .select-layout {
   display: grid;

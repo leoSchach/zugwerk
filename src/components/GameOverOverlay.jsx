@@ -5,9 +5,10 @@ const ICONS = { win: Trophy, draw: Handshake, loss: Flag };
 const CONFETTI_COLORS = ['#81b64c', '#f0c03c', '#4fc3f7', '#e57373', '#ba68c8', '#ffffff'];
 
 // Großes Ergebnisfenster über dem Brett am Ende einer Partie.
-//   outcome: 'win' | 'draw' | 'loss', title, subtitle, children: Knöpfe (z. B. Revanche)
+//   outcome: 'win' | 'draw' | 'loss', title, subtitle, extra: z. B. Wertungsänderung,
+//   children: Knöpfe (z. B. Revanche)
 // Erscheint kurz verzögert, damit man den letzten Zug (z. B. das Matt) noch sieht.
-export default function GameOverOverlay({ outcome, title, subtitle, children }) {
+export default function GameOverOverlay({ outcome, title, subtitle, extra, children }) {
   const [visible, setVisible] = useState(false);
   const [closed, setClosed] = useState(false);
   const Icon = ICONS[outcome];
@@ -63,6 +64,7 @@ export default function GameOverOverlay({ outcome, title, subtitle, children }) 
         </span>
         <h2>{title}</h2>
         {subtitle && <p>{subtitle}</p>}
+        {extra}
         <div className="game-over-actions">
           {children}
           <button className="btn" onClick={() => setClosed(true)}>

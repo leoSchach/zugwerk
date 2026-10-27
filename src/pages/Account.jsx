@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BookOpen, Cloud, CloudOff, Library, LogOut, Puzzle } from 'lucide-react';
 import { useAuth } from '../auth.jsx';
 import { ALL_LESSONS } from '../lessons/content.js';
 import { MASTERY_RUNS } from '../openings/progress.js';
 import { REPERTOIRE } from '../openings/repertoire.js';
 import { SYNCED_KEYS, loadLocal } from '../storage.js';
+import { MODES, START_RATING, fetchMyRatings } from '../online/games.js';
 
 export default function Account() {
   const auth = useAuth();
@@ -205,6 +206,11 @@ const SYNC_TEXT = {
 
 function Profile() {
   const auth = useAuth();
+  const [ratings, setRatings] = useState(null);
+
+  useEffect(() => {
+    fetchMyRatings(auth.user.id).then(setRatings);
+  }, [auth.user.id]);
   const puzzles = loadLocal(SYNCED_KEYS.puzzles);
   const lessons = loadLocal(SYNCED_KEYS.lessons) ?? [];
   const openings = loadLocal(SYNCED_KEYS.openings) ?? {};
@@ -227,6 +233,31 @@ function Profile() {
         </button>
       </div>
 
+      <h2 className="section-title">Elo-Wertungen</h2>
+      <div className="rating-grid">
+        {Object.entries(MODES).map(([mode, info]) => {
+          const r = ratings?.[mode];
+          return (
+            <a key={mode} className="card rating-card" href="#/freunde">
+              <span className="rating-mode">
+                {info.emoji} {info.label}
+              </span>
+              <span className="stat-value">{r?.rating ?? START_RATING}</span>
+              <span className="muted small">
+                {r?.games
+                  ? `${r.games} Partien · ${r.wins} S / ${r.draws} R / ${r.losses} N · Bestwert ${r.best}`
+                  : 'Noch keine gewertete Partie'}
+              </span>
+            </a>
+          );
+        })}
+      </div>
+      <p className="muted small">
+        Wertungen gibt es für gewertete Partien gegen Freunde. Jeder startet bei {START_RATING}; in den ersten 20
+        Partien ändert sich die Wertung schneller.
+      </p>
+
+      <h2 className="section-title">Lernfortschritt</h2>
       <div className="card-grid">
         <a className="card stat-card" href="#/puzzles">
           <Puzzle size={22} />

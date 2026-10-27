@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LogIn, Shuffle, Users } from 'lucide-react';
 import { useAuth, rememberReturn } from '../auth.jsx';
-import { REASONS, TIME_CONTROLS, createGame, listMyGames, timeLabel } from '../online/games.js';
+import { MODES, REASONS, START_RATING, TIME_CONTROLS, createGame, fetchMyRatings, listMyGames, timeLabel } from '../online/games.js';
 
 const COLORS = [
   { id: 'white', label: 'Weiß', piece: '♔' },
@@ -47,15 +47,23 @@ function CreateGame() {
   const auth = useAuth();
   const [color, setColor] = useState('random');
   const [timeControl, setTimeControl] = useState('10+0');
+  const [rated, setRated] = useState(true);
+  const [ratings, setRatings] = useState({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchMyRatings(auth.user.id).then(setRatings);
+  }, [auth.user.id]);
+
+  const selected = TIME_CONTROLS.find((t) => t.id === timeControl);
 
   async function create() {
     setBusy(true);
     setError(null);
     try {
       const myColor = color === 'random' ? (Math.random() < 0.5 ? 'white' : 'black') : color;
-      const id = await createGame({ userId: auth.user.id, username: auth.username, color: myColor, timeControl });
+      const id = await createGame({ userId: auth.user.id, username: auth.username, color: myColor, timeControl, rated });
       window.location.hash = `#/partie/${id}`;
     } catch (e) {
       setError('Die Partie konnte nicht erstellt werden: ' + e.message);
@@ -79,18 +87,49 @@ function CreateGame() {
         ))}
       </div>
 
-      <p className="label">Bedenkzeit</p>
-      <div className="time-grid">
-        {TIME_CONTROLS.map((t) => (
-          <button
-            key={t.id}
-            className={`time-option ${timeControl === t.id ? 'active' : ''}`}
-            onClick={() => setTimeControl(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      {Object.entries(MODES).map(([mode, info]) => (
+        <div key={mode} className="mode-group">
+          <p className="label mode-label">
+            <span>
+              {info.emoji} {info.label}
+            </span>
+            <span className="mode-rating">{ratings[mode]?.rating ?? START_RATING}</span>
+          </p>
+          <div className="time-grid">
+            {TIME_CONTROLS.filter((t) => t.mode === mode).map((t) => (
+              <button
+                key={t.id}
+                className={`time-option ${timeControl === t.id ? 'active' : ''}`}
+                onClick={() => setTimeControl(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <button
+        className={`time-option untimed ${timeControl === 'none' ? 'active' : ''}`}
+        onClick={() => setTimeControl('none')}
+      >
+        Ohne Uhr (ungewertet)
+      </button>
+
+      <label className={`toggle-row rated-toggle ${!selected.initial ? 'disabled' : ''}`}>
+        <span>
+          <span className="toggle-label">Gewertete Partie</span>
+          <span className="muted small">
+            {selected.initial ? 'Das Ergebnis zählt für eure Elo-Wertung.' : 'Partien ohne Uhr werden nicht gewertet.'}
+          </span>
+        </span>
+        <input
+          type="checkbox"
+          className="switch"
+          checked={rated && Boolean(selected.initial)}
+          disabled={!selected.initial}
+          onChange={(e) => setRated(e.target.checked)}
+        />
+      </label>
 
       {error && <p className="error-text">{error}</p>}
       <button className="btn btn-primary btn-large" onClick={create} disabled={busy}>
@@ -120,6 +159,7 @@ function MyGames({ userId }) {
           const myColor = g.white_id === userId ? 'w' : 'b';
           const opponent = (myColor === 'w' ? g.black_name : g.white_name) ?? 'Wartet auf Gegner';
           const myTurn = g.status === 'active' && (g.moves.length % 2 === 0 ? 'w' : 'b') === myColor;
+          const change = myColor === 'w' ? g.white_change : g.black_change;
           let status;
           if (g.status === 'waiting') status = 'Einladung offen';
           else if (g.status === 'active') status = myTurn ? 'Du bist am Zug' : 'Gegner am Zug';
@@ -132,10 +172,18 @@ function MyGames({ userId }) {
               <span className="game-row-main">
                 <strong>{opponent}</strong>
                 <span className="muted small">
-                  {timeLabel(g)} · {Math.ceil(g.moves.length / 2)} Züge
+                  {timeLabel(g)}
+                  {g.rated ? ' · gewertet' : ''} · {Math.ceil(g.moves.length / 2)} Züge
                 </span>
               </span>
-              <span className={`game-row-status ${g.status}`}>{status}</span>
+              <span className={`game-row-status ${g.status}`}>
+                {status}
+                {change != null && (
+                  <span className={`rating-change ${change > 0 ? 'up' : change < 0 ? 'down' : ''}`}>
+                    {change > 0 ? `+${change}` : change}
+                  </span>
+                )}
+              </span>
             </a>
           );
         })}
