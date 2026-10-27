@@ -7,6 +7,8 @@ import { needsPromotion, usePromotion } from '../components/Promotion.jsx';
 import { useAuth, rememberReturn } from '../auth.jsx';
 import { colorName, legalDests } from '../chess-utils.js';
 import GameReview from '../components/GameReview.jsx';
+import GameOverOverlay from '../components/GameOverOverlay.jsx';
+import ResultBanner from '../components/ResultBanner.jsx';
 import { findOpening, useOpeningBook } from '../openings/book.js';
 import { REASONS, actions, formatClock, gameLink, remainingMs, timeLabel, useOnlineGame } from '../online/games.js';
 
@@ -256,30 +258,54 @@ function LiveGame({ game, serverOffset }) {
   const opponentOffersDraw = active && me && game.draw_offer && game.draw_offer !== me;
   const iOfferedDraw = active && me && game.draw_offer === me;
 
-  let resultText = null;
+  // Ergebnis aus deiner Sicht (Zuschauer sehen es neutral)
+  let result = null;
   if (game.status === 'finished') {
     const reason = REASONS[game.reason] ?? '';
-    if (game.result === '1/2-1/2') resultText = { kind: 'draw', text: `Remis ${reason}` };
+    const reasonText = reason.charAt(0).toUpperCase() + reason.slice(1);
+    if (game.result === '1/2-1/2') result = { outcome: 'draw', title: 'Remis', subtitle: reasonText };
     else {
       const winner = game.result === '1-0' ? 'w' : 'b';
-      if (!me) resultText = { kind: 'draw', text: `${names[winner]} gewinnt ${reason}` };
-      else if (winner === me) resultText = { kind: 'win', text: `Du hast gewonnen ${reason}!` };
-      else resultText = { kind: 'loss', text: `Du hast verloren ${reason}.` };
+      const loser = winner === 'w' ? 'b' : 'w';
+      if (!me) result = { outcome: 'draw', title: `${names[winner]} gewinnt`, subtitle: reasonText };
+      else if (winner === me) result = { outcome: 'win', title: 'Du hast gewonnen!', subtitle: `${reasonText} gegen ${names[loser]}` };
+      else result = { outcome: 'loss', title: 'Verloren', subtitle: reasonText };
     }
   }
+
+  const rematchButton = me && (game.rematch_id ? (
+    <a className="btn btn-primary" href={`#/partie/${game.rematch_id}`}>
+      <RotateCcw size={18} /> Zur Revanche
+    </a>
+  ) : (
+    <button className="btn btn-primary" onClick={rematch}>
+      <RotateCcw size={18} /> Revanche
+    </button>
+  ));
 
   return (
     <div className="page game-page">
       <div className="game-layout">
         <div className="board-column">
           <PlayerBar name={names[top]} ms={clocks[top]} running={active && chess.turn() === top} />
-          <Board config={boardConfig} onMove={handleMove} overlay={promotion.dialog} />
+          <Board
+            config={boardConfig}
+            onMove={handleMove}
+            overlay={
+              promotion.dialog ??
+              (result && (
+                <GameOverOverlay outcome={result.outcome} title={result.title} subtitle={result.subtitle}>
+                  {rematchButton}
+                </GameOverOverlay>
+              ))
+            }
+          />
           <PlayerBar name={names[bottom]} ms={clocks[bottom]} running={active && chess.turn() === bottom} you={me === bottom} />
         </div>
 
         <aside className="card game-panel">
-          {resultText ? (
-            <div className={`result result-${resultText.kind}`}>{resultText.text}</div>
+          {result ? (
+            <ResultBanner outcome={result.outcome} title={result.title} subtitle={result.subtitle} />
           ) : (
             <p className="status">
               <span className={`turn-dot ${colorName(chess.turn())}`} />
@@ -324,17 +350,7 @@ function LiveGame({ game, serverOffset }) {
 
           {game.status === 'finished' && (
             <>
-              {me && game.rematch_id ? (
-                <a className="btn btn-primary btn-large" href={`#/partie/${game.rematch_id}`}>
-                  <RotateCcw size={18} /> Zur Revanche
-                </a>
-              ) : (
-                me && (
-                  <button className="btn btn-primary btn-large" onClick={rematch}>
-                    <RotateCcw size={18} /> Revanche
-                  </button>
-                )
-              )}
+              {rematchButton}
               {moves.length > 0 && <GameReview game={chess} white={names.w} black={names.b} me={me} result={game.result} />}
             </>
           )}

@@ -7,6 +7,8 @@ import MoveList from '../components/MoveList.jsx';
 import { BOTS } from '../bots.js';
 import { createEngine } from '../engine/stockfish.js';
 import GameReview from '../components/GameReview.jsx';
+import GameOverOverlay from '../components/GameOverOverlay.jsx';
+import ResultBanner from '../components/ResultBanner.jsx';
 import { findOpening, useOpeningBook } from '../openings/book.js';
 import { useChessGame } from '../hooks/useChessGame.js';
 import { colorName, gameOverText, legalDests } from '../chess-utils.js';
@@ -121,15 +123,16 @@ async function chooseBotMove(bot, game, engine) {
   return move;
 }
 
-function resultFor(game, playerColor, resigned) {
-  if (resigned) return { outcome: 'loss', text: 'Du hast aufgegeben.' };
+// Ergebnis aus deiner Sicht: outcome, Überschrift und Erklärung
+function resultFor(game, playerColor, resigned, bot) {
+  if (resigned) return { outcome: 'loss', title: 'Verloren', subtitle: 'Du hast aufgegeben.' };
   if (game.isCheckmate()) {
     return game.turn() === playerColor[0]
-      ? { outcome: 'loss', text: 'Schachmatt – du hast verloren.' }
-      : { outcome: 'win', text: 'Schachmatt – du hast gewonnen!' };
+      ? { outcome: 'loss', title: 'Verloren', subtitle: `${bot.name} hat dich mattgesetzt.` }
+      : { outcome: 'win', title: 'Du hast gewonnen!', subtitle: `Schachmatt gegen ${bot.name}` };
   }
   const draw = gameOverText(game);
-  return draw ? { outcome: 'draw', text: draw } : null;
+  return draw ? { outcome: 'draw', title: 'Remis', subtitle: draw } : null;
 }
 
 const BOT_REACTIONS = {
@@ -155,7 +158,7 @@ function BotGame({ bot, playerColor, onRematch, onExit }) {
 
   const book = useOpeningBook();
   const opening = useMemo(() => findOpening(book, game.history({ verbose: true })), [book, fen]);
-  const result = resultFor(game, playerColor, resigned);
+  const result = resultFor(game, playerColor, resigned, bot);
   const botTurn = !result && game.turn() !== playerColor[0];
 
   // Wenn der Bot am Zug ist: Zug berechnen und ausführen
@@ -213,7 +216,20 @@ function BotGame({ bot, playerColor, onRematch, onExit }) {
             <span className="player-elo">({bot.elo})</span>
             {thinking && <span className="thinking-dots" aria-label="denkt nach" />}
           </div>
-          <Board config={boardConfig} onMove={handlePlayerMove} overlay={promotion.dialog} />
+          <Board
+            config={boardConfig}
+            onMove={handlePlayerMove}
+            overlay={
+              promotion.dialog ??
+              (result && (
+                <GameOverOverlay outcome={result.outcome} title={result.title} subtitle={result.subtitle}>
+                  <button className="btn btn-primary" onClick={onRematch}>
+                    <RotateCcw size={18} /> Revanche
+                  </button>
+                </GameOverOverlay>
+              ))
+            }
+          />
           <div className="player-bar">
             <Avatar piece={playerColor === 'white' ? '♙' : '♟'} color="#5c5a57" size={36} />
             <span className="player-name">Du</span>
@@ -224,7 +240,7 @@ function BotGame({ bot, playerColor, onRematch, onExit }) {
           <div className="speech">{result ? BOT_REACTIONS[result.outcome] : bot.greeting}</div>
 
           {result ? (
-            <div className={`result result-${result.outcome}`}>{result.text}</div>
+            <ResultBanner outcome={result.outcome} title={result.title} subtitle={result.subtitle} />
           ) : (
             <p className="status">
               {game.inCheck() && 'Schach! '}
