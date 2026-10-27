@@ -9,3 +9,6 @@ public/stockfish/
 # Zugangsdaten (Supabase) – nicht ins Repository
 .env.local
 .env.*.local
+
+# Lokale Aufgaben (Issue-Tracker der Agent-Skills) – bleiben privat
+.scratch/

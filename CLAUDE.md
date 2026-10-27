@@ -79,3 +79,17 @@ Repository: https://github.com/leoSchach/zugwerk (öffentlich)
   (Online-Partien, Elo), kann Claude nicht selbst testen – der Nutzer testet sie.
 - Schach-Inhalte (Lektionen, Eröffnungen) mit chess.js auf Legalität und mit Stockfish (npm-Paket,
   läuft auch in Node) auf Richtigkeit prüfen.
+
+## Agent skills
+
+### Issue tracker
+
+Aufgaben liegen als Markdown-Dateien im Ordner `.scratch/` (nur lokal, in `.gitignore`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Standard-Labels (needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix), als `Status:`-Zeile in jeder Aufgabendatei. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: ein `GLOSSARY.md` und `docs/adr/` im Hauptordner (werden erst angelegt, wenn sie gebraucht werden). See `docs/agents/domain.md`.
