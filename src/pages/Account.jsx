@@ -254,7 +254,7 @@ function Profile() {
       </div>
       <p className="muted small">
         Wertungen gibt es für gewertete Partien gegen Freunde. Jeder startet bei {START_RATING}; in den ersten 20
-        Partien ändert sich die Wertung schneller.
+        Partien ändert sich die Wertung schneller. Unter 100 kann sie nicht fallen.
       </p>
 
       <h2 className="section-title">Lernfortschritt</h2>

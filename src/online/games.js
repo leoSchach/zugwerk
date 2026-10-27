@@ -9,7 +9,7 @@ export const MODES = {
   classical: { label: 'Klassisch', emoji: '⏳' },
 };
 
-export const START_RATING = 1200;
+export const START_RATING = 400;
 
 // Bedenkzeiten zur Auswahl, nach Modus gruppiert: Grundzeit in Sekunden, Zuschlag pro Zug
 export const TIME_CONTROLS = [

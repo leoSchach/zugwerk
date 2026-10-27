@@ -28,8 +28,8 @@ $$;
 create table if not exists public.ratings (
   user_id uuid not null references auth.users (id) on delete cascade,
   mode text not null,
-  rating int not null default 1200,
-  best int not null default 1200,
+  rating int not null default 400,
+  best int not null default 400,
   games int not null default 0,
   wins int not null default 0,
   draws int not null default 0,
@@ -85,6 +85,10 @@ begin
   -- In den ersten 20 Partien ändert sich die Wertung schneller
   dw := round((case when gw < 20 then 40 else 20 end) * (score - expected));
   db := round((case when gb < 20 then 40 else 20 end) * (expected - score));
+
+  -- Untergrenze 100: tiefer kann die Wertung nicht fallen
+  dw := greatest(dw, 100 - rw);
+  db := greatest(db, 100 - rb);
 
   update public.ratings set
     rating = rating + dw, best = greatest(best, rating + dw), games = games + 1,
