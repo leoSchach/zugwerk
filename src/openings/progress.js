@@ -1,29 +1,21 @@
 import { useEffect, useState } from 'react';
+import { SYNCED_KEYS, loadLocal, saveLocal } from '../storage.js';
 
-// Fortschritt im Eröffnungstrainer, im Browser gespeichert:
+// Fortschritt im Eröffnungstrainer (im Browser gespeichert und mit dem Konto synchronisiert):
 // { [id]: { learned: true/false, runs: Anzahl Übungsdurchläufe, perfect: davon fehlerfrei } }
-const STORAGE_KEY = 'zugwerk-eroeffnungen';
 
 // Ab so vielen fehlerfreien Durchläufen gilt eine Eröffnung als gemeistert
 export const MASTERY_RUNS = 3;
 
 function loadProgress() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {};
-  } catch {
-    return {};
-  }
+  return loadLocal(SYNCED_KEYS.openings) ?? {};
 }
 
 export function useOpeningProgress() {
   const [progress, setProgress] = useState(loadProgress);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-    } catch {
-      // Speichern nicht möglich – egal
-    }
+    saveLocal(SYNCED_KEYS.openings, progress);
   }, [progress]);
 
   function update(id, changes) {

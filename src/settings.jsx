@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { SYNCED_KEYS, loadLocal, saveLocal } from './storage.js';
 
 // Vorgefertigte Brettfarben: [helles Feld, dunkles Feld]
 export const BOARD_THEMES = [
@@ -22,15 +23,8 @@ export const DEFAULT_SETTINGS = {
   notation: 'de', // 'de' = S, L, T, D, K  |  'en' = N, B, R, Q, K
 };
 
-const STORAGE_KEY = 'zugwerk-einstellungen';
-
 function loadSettings() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return { ...DEFAULT_SETTINGS, ...saved };
-  } catch {
-    return DEFAULT_SETTINGS;
-  }
+  return { ...DEFAULT_SETTINGS, ...loadLocal(SYNCED_KEYS.settings) };
 }
 
 export function boardColors(settings) {
@@ -58,11 +52,7 @@ export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(loadSettings);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    } catch {
-      // Speichern nicht möglich (z. B. privater Modus) – egal
-    }
+    saveLocal(SYNCED_KEYS.settings, settings);
 
     // Brettfarben als CSS-Variablen setzen, styles.css benutzt sie
     const { light, dark } = boardColors(settings);

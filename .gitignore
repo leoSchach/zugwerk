@@ -5,3 +5,7 @@ dist/
 
 # wird bei "npm install" automatisch erzeugt
 public/stockfish/
+
+# Zugangsdaten (Supabase) – nicht ins Repository
+.env.local
+.env.*.local

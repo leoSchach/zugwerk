@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { THEME_FILTERS } from './themes.js';
+import { SYNCED_KEYS, loadLocal, saveLocal } from '../storage.js';
 
 // Puzzle-Fortschritt: Wertung, Serie und welche Puzzles schon gespielt wurden.
-// Wird im Browser gespeichert (localStorage).
-const STORAGE_KEY = 'zugwerk-puzzles';
+// Wird im Browser gespeichert und mit dem Konto synchronisiert (siehe storage.js).
 
 const START_PROGRESS = {
   rating: 1000,
@@ -16,11 +16,7 @@ const START_PROGRESS = {
 };
 
 function loadProgress() {
-  try {
-    return { ...START_PROGRESS, ...JSON.parse(localStorage.getItem(STORAGE_KEY)) };
-  } catch {
-    return START_PROGRESS;
-  }
+  return { ...START_PROGRESS, ...loadLocal(SYNCED_KEYS.puzzles) };
 }
 
 // Elo-Berechnung wie im Schach: Ein schweres Puzzle zu lösen bringt mehr Punkte.
@@ -37,11 +33,7 @@ export function usePuzzleProgress() {
   const [progress, setProgress] = useState(loadProgress);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-    } catch {
-      // Speichern nicht möglich – Fortschritt gilt nur bis zum Neuladen
-    }
+    saveLocal(SYNCED_KEYS.puzzles, progress);
   }, [progress]);
 
   // Speichert ein Ergebnis und gibt die Änderung der Wertung zurück

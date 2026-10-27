@@ -2,25 +2,14 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, Check, ChevronLeft, ChevronRight, Play, Trophy } from 'lucide-react';
 import { ALL_LESSONS, CHAPTERS } from '../lessons/content.js';
 import { MoveStep, PlayStep, StarsStep, TextStep } from '../lessons/steps.jsx';
+import { SYNCED_KEYS, loadLocal, saveLocal } from '../storage.js';
 
-const STORAGE_KEY = 'zugwerk-lektionen';
-
-// Abgeschlossene Lektionen, im Browser gespeichert
+// Abgeschlossene Lektionen (im Browser gespeichert und mit dem Konto synchronisiert)
 function useLessonProgress() {
-  const [completed, setCompleted] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? [];
-    } catch {
-      return [];
-    }
-  });
+  const [completed, setCompleted] = useState(() => loadLocal(SYNCED_KEYS.lessons) ?? []);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
-    } catch {
-      // Speichern nicht möglich – egal
-    }
+    saveLocal(SYNCED_KEYS.lessons, completed);
   }, [completed]);
 
   return {

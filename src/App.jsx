@@ -8,6 +8,7 @@ import Puzzles from './pages/Puzzles.jsx';
 import Analysis from './pages/Analysis.jsx';
 import Openings from './pages/Openings.jsx';
 import Lessons from './pages/Lessons.jsx';
+import Account from './pages/Account.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 
 const PAGES = {
@@ -19,6 +20,7 @@ const PAGES = {
   analyse: Analysis,
   eroeffnungen: Openings,
   lektionen: Lessons,
+  konto: Account,
   einstellungen: SettingsPage,
 };
 

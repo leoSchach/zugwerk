@@ -5,10 +5,12 @@ import {
   Grid3x3,
   House,
   Library,
+  LogIn,
   Puzzle,
   Settings,
   Swords,
 } from 'lucide-react';
+import { useAuth } from '../auth.jsx';
 
 // hideOnMobile: auf dem Handy ist unten nur Platz für wenige Einträge
 const MAIN_ITEMS = [
@@ -20,7 +22,7 @@ const MAIN_ITEMS = [
 const LEARN_ITEMS = [
   { route: 'lernen', label: 'Übersicht', mobileLabel: 'Lernen', icon: GraduationCap },
   { route: 'lektionen', label: 'Lektionen', icon: BookOpen, hideOnMobile: true },
-  { route: 'puzzles', label: 'Puzzles', icon: Puzzle },
+  { route: 'puzzles', label: 'Puzzles', icon: Puzzle, hideOnMobile: true },
   { route: 'eroeffnungen', label: 'Eröffnungen', icon: Library, hideOnMobile: true },
   { route: 'analyse', label: 'Analyse', icon: ChartLine, hideOnMobile: true },
 ];
@@ -36,6 +38,18 @@ function NavItem({ item, current }) {
       <Icon size={20} />
       <span className="nav-label">{item.label}</span>
       {item.mobileLabel && <span className="nav-label-mobile">{item.mobileLabel}</span>}
+    </a>
+  );
+}
+
+// Konto-Eintrag: Benutzername mit Anfangsbuchstabe, oder "Anmelden"
+function AccountItem({ current }) {
+  const auth = useAuth();
+  if (!auth.enabled) return null;
+  return (
+    <a href="#/konto" className={`nav-item ${current === 'konto' ? 'active' : ''}`}>
+      {auth.user ? <span className="nav-avatar">{auth.username.slice(0, 1).toUpperCase()}</span> : <LogIn size={20} />}
+      <span className="nav-label">{auth.user ? auth.username : 'Anmelden'}</span>
     </a>
   );
 }
@@ -67,6 +81,7 @@ export default function Sidebar({ current }) {
       </div>
 
       <div className="nav-group nav-bottom">
+        <AccountItem current={current} />
         <NavItem
           item={{ route: 'einstellungen', label: 'Einstellungen', icon: Settings }}
           current={current}
