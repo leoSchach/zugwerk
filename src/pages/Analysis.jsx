@@ -14,7 +14,7 @@ import EvalBar from '../components/EvalBar.jsx';
 import EvalGraph from '../components/EvalGraph.jsx';
 import MoveBadge, { badgeSvg } from '../components/MoveBadge.jsx';
 import { CLASSES, CLASS_ORDER } from '../analysis/classify.js';
-import { analyseGame, getAnalysisPgn, parsePgn, setAnalysisPgn } from '../analysis/analyseGame.js';
+import { analysePgn, cancelAnalysis, getAnalysisPgn, parsePgn, setAnalysisPgn } from '../analysis/analyseGame.js';
 import { colorName, formatSan } from '../chess-utils.js';
 import { useSettings } from '../settings.jsx';
 
@@ -32,9 +32,6 @@ const EXAMPLE_PGN = `[White "Paul Morphy"]
 1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Nf6 7. Qb3 Qe7
 8. Nc3 c6 9. Bg5 b5 10. Nxb5 cxb5 11. Bxb5+ Nbd7 12. O-O-O Rd8 13. Rxd7 Rxd7
 14. Rd1 Qe6 15. Bxd7+ Nxd7 16. Qb8+ Nxb8 17. Rd8# 1-0`;
-
-// Ergebnisse merken, damit beim Zurückkehren nicht neu analysiert werden muss
-let cache = { key: null, result: null };
 
 export default function Analysis() {
   const [pgn, setPgn] = useState(getAnalysisPgn);
@@ -55,20 +52,14 @@ export default function Analysis() {
     setAnalysisPgn(text);
     setParsed(game);
 
-    const key = `${searchDepth}|${text}`;
-    if (cache.key === key) {
-      setResult(cache.result);
-      return;
-    }
-
-    jobRef.current?.cancel();
+    // Läuft die Analyse schon (z. B. nach einer Bot-Partie gestartet) oder ist sie fertig,
+    // wird sie übernommen statt neu berechnet
+    jobRef.current?.stopListening();
     setResult(null);
-    setProgress({ done: 0, total: game.history.length + 1 });
-    const job = analyseGame(game.history, searchDepth, (done, total) => setProgress({ done, total }));
-    jobRef.current = job;
+    const job = analysePgn(text, searchDepth, (done, total) => setProgress({ done, total }));
+    jobRef.current = { ...job, pgn: text, depth: searchDepth };
     job.promise.then((res) => {
-      if (!res) return;
-      cache = { key, result: res };
+      if (!res || jobRef.current?.pgn !== text) return;
       setProgress(null);
       setResult(res);
     });
@@ -77,11 +68,12 @@ export default function Analysis() {
   // Wurde eine Partie übergeben (z. B. aus "Spielen"), gleich analysieren
   useEffect(() => {
     if (pgn) start(pgn);
-    return () => jobRef.current?.cancel();
+    return () => jobRef.current?.stopListening();
   }, []);
 
   function cancel() {
-    jobRef.current?.cancel();
+    if (jobRef.current) cancelAnalysis(jobRef.current.pgn, jobRef.current.depth);
+    jobRef.current = null;
     setProgress(null);
   }
 

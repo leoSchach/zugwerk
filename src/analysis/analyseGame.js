@@ -23,13 +23,23 @@ export function setAnalysisPgn(pgn) {
   }
 }
 
-// Partie an die Analyse-Seite schicken und dorthin wechseln
-export function openInAnalysis(game, white, black) {
+// PGN einer Partie mit Spielernamen und (optional) Ergebnis wie "1-0"
+export function buildPgn(game, white, black, result) {
   const copy = new Chess();
   copy.loadPgn(game.pgn());
   if (white) copy.setHeader('White', white);
   if (black) copy.setHeader('Black', black);
-  setAnalysisPgn(copy.pgn());
+  if (result) copy.setHeader('Result', result);
+  return copy.pgn();
+}
+
+// Partie an die Analyse-Seite schicken und dorthin wechseln
+export function openInAnalysis(game, white, black) {
+  openPgnInAnalysis(buildPgn(game, white, black));
+}
+
+export function openPgnInAnalysis(pgn) {
+  setAnalysisPgn(pgn);
   window.location.hash = '#/analyse';
 }
 
@@ -134,6 +144,43 @@ export function analyseGame(history, depth, onProgress) {
       engine.terminate();
     },
   };
+}
+
+// Laufende und fertige Analysen, damit dieselbe Partie nicht zweimal berechnet wird.
+// So kann z. B. die Bot-Partie die Analyse schon starten und die Analyse-Seite übernimmt sie.
+const jobs = new Map(); // "tiefe|pgn" -> { promise, done, total, listeners, cancel }
+
+const jobKey = (pgn, depth) => `${depth}|${pgn}`;
+
+// Startet (oder übernimmt) die Analyse einer PGN.
+// onProgress(fertig, gesamt) wird sofort und nach jeder Stellung aufgerufen.
+// Gibt { promise, stopListening } zurück – stopListening bricht die Analyse NICHT ab.
+export function analysePgn(pgn, depth, onProgress) {
+  const key = jobKey(pgn, depth);
+  let job = jobs.get(key);
+  if (!job) {
+    const parsed = parsePgn(pgn);
+    job = { done: 0, total: parsed.history.length + 1, listeners: new Set() };
+    const run = analyseGame(parsed.history, depth, (done, total) => {
+      job.done = done;
+      job.total = total;
+      job.listeners.forEach((listener) => listener(done, total));
+    });
+    job.promise = run.promise;
+    job.cancel = run.cancel;
+    jobs.set(key, job);
+  }
+  if (onProgress) {
+    job.listeners.add(onProgress);
+    onProgress(job.done, job.total);
+  }
+  return { promise: job.promise, stopListening: () => job.listeners.delete(onProgress) };
+}
+
+export function cancelAnalysis(pgn, depth) {
+  const key = jobKey(pgn, depth);
+  jobs.get(key)?.cancel();
+  jobs.delete(key);
 }
 
 // Genauigkeit und Anzahl der Zugkategorien je Farbe

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Chess } from 'chess.js';
-import { ChartLine, Check, Copy, Flag, Handshake, LogIn, RotateCcw, Share2, X } from 'lucide-react';
+import { Check, Copy, Flag, Handshake, LogIn, RotateCcw, Share2, X } from 'lucide-react';
 import Board from '../components/Board.jsx';
 import MoveList from '../components/MoveList.jsx';
 import { needsPromotion, usePromotion } from '../components/Promotion.jsx';
 import { useAuth, rememberReturn } from '../auth.jsx';
 import { colorName, legalDests } from '../chess-utils.js';
-import { openInAnalysis } from '../analysis/analyseGame.js';
+import GameReview from '../components/GameReview.jsx';
 import { findOpening, useOpeningBook } from '../openings/book.js';
 import { REASONS, actions, formatClock, gameLink, remainingMs, timeLabel, useOnlineGame } from '../online/games.js';
 
@@ -335,11 +335,7 @@ function LiveGame({ game, serverOffset }) {
                   </button>
                 )
               )}
-              {moves.length > 0 && (
-                <button className="btn btn-analyse" onClick={() => openInAnalysis(chess, names.w, names.b)}>
-                  <ChartLine size={18} /> Partie analysieren
-                </button>
-              )}
+              {moves.length > 0 && <GameReview game={chess} white={names.w} black={names.b} me={me} result={game.result} />}
             </>
           )}
         </aside>
