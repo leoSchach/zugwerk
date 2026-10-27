@@ -46,6 +46,21 @@ export function writeProgress(progress) {
   }
 }
 
+// Vergleicht zwei Fortschritte nach Inhalt. Die Reihenfolge der Einträge ist egal –
+// die Datenbank (jsonb) sortiert sie nämlich anders, als der Browser sie speichert.
+export function sameProgress(a, b) {
+  return stableStringify(a) === stableStringify(b);
+}
+
+function stableStringify(value) {
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`;
+  if (value && typeof value === 'object') {
+    const keys = Object.keys(value).sort();
+    return `{${keys.map((k) => `${JSON.stringify(k)}:${stableStringify(value[k])}`).join(',')}}`;
+  }
+  return JSON.stringify(value ?? null);
+}
+
 // Führt den Fortschritt aus dem Browser und aus der Cloud zusammen,
 // damit beim ersten Anmelden auf einem neuen Gerät nichts verloren geht.
 export function mergeProgress(local, cloud) {

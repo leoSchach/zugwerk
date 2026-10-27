@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from './supabase.js';
-import { collectProgress, mergeProgress, onLocalSave, writeProgress } from './storage.js';
+import { collectProgress, mergeProgress, onLocalSave, sameProgress, writeProgress } from './storage.js';
 
 const AuthContext = createContext(null);
 
@@ -23,6 +23,19 @@ function translate(error) {
 
 // Nach dem Klick auf einen Link aus einer E-Mail landet man auf der Startseite (ohne #)
 const redirectUrl = () => window.location.origin + window.location.pathname;
+
+// Sicherung: höchstens einmal pro Sitzung neu laden, damit nie eine Endlosschleife entsteht
+const RELOAD_FLAG = 'zugwerk-sync-reload';
+
+function reloadOnce() {
+  try {
+    if (sessionStorage.getItem(RELOAD_FLAG)) return;
+    sessionStorage.setItem(RELOAD_FLAG, '1');
+  } catch {
+    return;
+  }
+  window.location.reload();
+}
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
@@ -72,7 +85,7 @@ export function AuthProvider({ children }) {
       }
       const local = collectProgress();
       const merged = mergeProgress(local, data?.data);
-      const changed = JSON.stringify(merged) !== JSON.stringify(local);
+      const changed = !sameProgress(merged, local);
       if (changed) writeProgress(merged);
       await upload();
       onLocalSave(() => {
@@ -80,7 +93,7 @@ export function AuthProvider({ children }) {
         timer = setTimeout(upload, 1500);
       });
       // Neu laden, damit alle Seiten den zusammengeführten Fortschritt anzeigen
-      if (changed && !cancelled) window.location.reload();
+      if (changed && !cancelled) reloadOnce();
     }
 
     start();
